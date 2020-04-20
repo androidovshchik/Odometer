@@ -2,12 +2,13 @@
 
 package defpackage.odometer.screen
 
+import android.app.Fragment
 import android.app.FragmentManager
 import androidx.legacy.app.FragmentPagerAdapter
 
 class TabsAdapter(manager: FragmentManager) : FragmentPagerAdapter(manager) {
 
-    override fun getItem(position: Int) = when (position) {
+    override fun getItem(position: Int): Fragment = when (position) {
         0 -> FirstFragment.newInstance()
         else -> SecondFragment.newInstance()
     }

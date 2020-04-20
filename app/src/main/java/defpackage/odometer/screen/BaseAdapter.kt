@@ -43,7 +43,7 @@ abstract class BaseAdapter<T : IAdapter<E>, E> : RecyclerView.Adapter<BaseHolder
 
 interface IAdapter<E> {
 
-    fun onItemClicked(item: E, position: Int)
+    fun onItemClicked(position: Int, item: E)
 }
 
 abstract class BaseHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView),
