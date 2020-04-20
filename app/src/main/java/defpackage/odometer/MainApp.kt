@@ -5,6 +5,9 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import defpackage.odometer.local.Database
+import io.github.inflationx.calligraphy3.CalligraphyConfig
+import io.github.inflationx.calligraphy3.CalligraphyInterceptor
+import io.github.inflationx.viewpump.ViewPump
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.bind
@@ -37,5 +40,17 @@ class MainApp : Application(), KodeinAware {
                 .getDeclaredMethod("initializeWithDefaults", Context::class.java)
                 .invoke(null, applicationContext)
         }
+        ViewPump.init(
+            ViewPump.builder()
+                .addInterceptor(
+                    CalligraphyInterceptor(
+                        CalligraphyConfig.Builder()
+                            .setDefaultFontPath(null)
+                            .setFontAttrId(R.attr.fontPath)
+                            .build()
+                    )
+                )
+                .build()
+        )
     }
 }
