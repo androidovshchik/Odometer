@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import defpackage.odometer.local.Database
+import defpackage.odometer.local.Preferences
 import io.github.inflationx.calligraphy3.CalligraphyConfig
 import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.viewpump.ViewPump
@@ -22,6 +23,10 @@ class MainApp : Application(), KodeinAware {
 
         bind<Context>() with provider {
             applicationContext
+        }
+
+        bind<Preferences>() with provider {
+            Preferences(instance())
         }
 
         bind<Database>() with singleton {
