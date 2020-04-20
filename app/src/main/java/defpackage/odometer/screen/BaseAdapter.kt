@@ -8,11 +8,10 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 import org.jetbrains.anko.layoutInflater
-import ru.gidline.app.screen.base.listener.IRecycler
 import java.lang.ref.WeakReference
 
 @Suppress("MemberVisibilityCanBePrivate")
-abstract class BaseAdapter<T : IRecycler<E>, E> : RecyclerView.Adapter<BaseHolder<E>> {
+abstract class BaseAdapter<T : IAdapter<E>, E> : RecyclerView.Adapter<BaseHolder<E>> {
 
     val items = mutableListOf<E>()
 
@@ -40,6 +39,11 @@ abstract class BaseAdapter<T : IRecycler<E>, E> : RecyclerView.Adapter<BaseHolde
     protected fun ViewGroup.inflate(@LayoutRes layout: Int): View {
         return context.layoutInflater.inflate(layout, this, false)
     }
+}
+
+interface IAdapter<E> {
+
+    fun onItemClicked(item: E, position: Int)
 }
 
 abstract class BaseHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView),

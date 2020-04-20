@@ -52,6 +52,7 @@ dependencies {
     implementation "org.jetbrains.anko:anko-sdk19-listeners:0.10.8"
     implementation "org.kodein.di:kodein-di-generic-jvm:6.5.4"
     implementation "org.kodein.di:kodein-di-framework-android-core:6.5.4"
+    implementation 'androidx.legacy:legacy-support-v13:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha02'
     implementation "androidx.room:room-runtime:2.2.5"
     kapt "androidx.room:room-compiler:2.2.5"
