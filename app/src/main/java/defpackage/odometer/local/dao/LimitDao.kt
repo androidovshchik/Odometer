@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import defpackage.odometer.local.entities.LimitEntity
+import defpackage.odometer.local.entity.LimitEntity
 
 @Dao
 abstract class LimitDao {

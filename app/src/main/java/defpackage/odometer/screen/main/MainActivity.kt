@@ -1,4 +1,4 @@
-package defpackage.odometer.screen
+package defpackage.odometer.screen.main
 
 import android.Manifest
 import android.app.Activity

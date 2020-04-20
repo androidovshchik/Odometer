@@ -1,4 +1,4 @@
-package defpackage.odometer.local.entities
+package defpackage.odometer.local.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

@@ -20,7 +20,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="LockedOrientationActivity">
         <activity
-            android:name=".screen.MainActivity"
+            android:name=".screen.main.MainActivity"
             android:screenOrientation="sensorPortrait"
             android:windowSoftInputMode="adjustPan|stateHidden"
             android:launchMode="singleTask">

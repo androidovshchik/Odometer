@@ -1,18 +1,19 @@
-package defpackage.odometer.screen
+package defpackage.odometer.screen.main
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import defpackage.odometer.R
-import kotlinx.android.synthetic.main.fragment_second.*
+import defpackage.odometer.screen.base.BaseFragment
+import kotlinx.android.synthetic.main.fragment_first.*
 
-class SecondFragment : BaseFragment(), ListListener {
+class FirstFragment : BaseFragment(), ListListener {
 
     private val adapter = ListAdapter(this)
 
     override fun onCreateView(inflater: LayoutInflater, root: ViewGroup?, bundle: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_second, root, false)
+        return inflater.inflate(R.layout.fragment_first, root, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -39,8 +40,8 @@ class SecondFragment : BaseFragment(), ListListener {
     companion object {
 
         @Suppress("DEPRECATION")
-        fun newInstance(): SecondFragment {
-            return SecondFragment().apply {
+        fun newInstance(): FirstFragment {
+            return FirstFragment().apply {
                 arguments = Bundle().apply {
                 }
             }

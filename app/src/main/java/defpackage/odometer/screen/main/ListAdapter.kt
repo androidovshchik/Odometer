@@ -1,9 +1,12 @@
-package defpackage.odometer.screen
+package defpackage.odometer.screen.main
 
 import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
 import defpackage.odometer.R
+import defpackage.odometer.screen.base.BaseAdapter
+import defpackage.odometer.screen.base.BaseHolder
+import defpackage.odometer.screen.base.IAdapter
 import kotlinx.android.synthetic.main.item_list.view.*
 
 class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, Any>(listener) {

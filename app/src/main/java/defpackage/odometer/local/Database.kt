@@ -3,7 +3,7 @@ package defpackage.odometer.local
 import androidx.room.RoomDatabase
 import defpackage.odometer.local.dao.CommonDao
 import defpackage.odometer.local.dao.LimitDao
-import defpackage.odometer.local.entities.LimitEntity
+import defpackage.odometer.local.entity.LimitEntity
 
 @androidx.room.Database(
     entities = [

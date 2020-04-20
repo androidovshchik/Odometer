@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package defpackage.odometer.screen
+package defpackage.odometer.screen.main
 
 import android.app.Fragment
 import android.app.FragmentManager
