@@ -50,7 +50,6 @@ class MainApp : Application(), KodeinAware {
                 .addInterceptor(
                     CalligraphyInterceptor(
                         CalligraphyConfig.Builder()
-                            .setDefaultFontPath(null)
                             .setFontAttrId(R.attr.fontPath)
                             .build()
                     )
