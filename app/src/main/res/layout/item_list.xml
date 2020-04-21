@@ -25,7 +25,7 @@
         android:paddingTop="12dp"
         android:paddingEnd="16dp"
         android:paddingBottom="12dp"
-        android:textColor="@android:color/holo_green_dark"
+        android:textColor="@color/colorAccent"
         android:textSize="18sp"
         android:textStyle="bold"
         tools:text="6" />
