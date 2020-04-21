@@ -4,7 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="12dp">
+    android:paddingStart="12dp"
+    android:paddingTop="10dp"
+    android:paddingEnd="12dp"
+    android:paddingBottom="10dp">
 
     <EditText
         android:id="@+id/et_speed"
@@ -13,26 +16,27 @@
         android:layout_marginEnd="12dp"
         android:background="@drawable/text_background"
         android:gravity="center"
+        android:minWidth="50dp"
         android:paddingStart="14dp"
-        android:paddingTop="8dp"
+        android:paddingTop="12dp"
         android:paddingEnd="14dp"
-        android:paddingBottom="8dp"
+        android:paddingBottom="12dp"
         android:textColor="@android:color/holo_green_dark"
         android:textSize="18sp"
         android:textStyle="bold"
-        tools:text="60" />
+        tools:text="6" />
 
     <EditText
-        android:id="@+id/et_meters"
+        android:id="@+id/et_distance"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="@drawable/text_background"
         android:gravity="center"
         android:paddingStart="14dp"
-        android:paddingTop="8dp"
+        android:paddingTop="12dp"
         android:paddingEnd="14dp"
-        android:paddingBottom="8dp"
+        android:paddingBottom="12dp"
         android:textColor="@android:color/black"
         android:textSize="18sp"
         android:textStyle="bold"
