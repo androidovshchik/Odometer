@@ -1,9 +1,6 @@
 package defpackage.odometer.local.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import defpackage.odometer.local.entity.LimitEntity
 
 @Dao
@@ -22,4 +19,7 @@ abstract class LimitDao {
 
     @Update
     abstract fun update(item: LimitEntity): Int
+
+    @Delete
+    abstract fun delete(item: LimitEntity): Int
 }

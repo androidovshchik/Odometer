@@ -2,18 +2,26 @@ package defpackage.odometer
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.location.Location
 import android.location.LocationManager
+import android.util.SparseIntArray
 import com.google.android.gms.location.*
-import timber.log.Timber
 import java.lang.ref.WeakReference
 
 @SuppressLint("MissingPermission")
 @Suppress("MemberVisibilityCanBePrivate", "DEPRECATION")
-class LocationManager(context: Context, listener: TelemetryListener) {
+class LocationManager(context: Context) {
 
-    private val reference = WeakReference(listener)
+    private var reference: WeakReference<LocationListener>? = null
 
     private val fusedClient = LocationServices.getFusedLocationProviderClient(context)
+
+    /**
+     * Keys are duration in seconds, values are speed in km/h
+     */
+    private val speedMap = SparseIntArray()
+
+    private var lastLocation: Location? = null
 
     init {
         listener.apply {
@@ -24,6 +32,13 @@ class LocationManager(context: Context, listener: TelemetryListener) {
         }
     }
 
+    /**
+     * It is assumed that this will be called one time or never
+     */
+    fun setLocationListener(listener: LocationListener) {
+        reference = WeakReference(listener)
+    }
+
     fun requestUpdates(interval: Long) {
         fusedClient.requestLocationUpdates(LocationRequest.create().also {
             it.interval = interval
@@ -32,22 +47,40 @@ class LocationManager(context: Context, listener: TelemetryListener) {
         }, locationCallback, null)
     }
 
+    private fun onLocationChanged(location: Location) {
+        lastLocation?.let {
+            val output = FloatArray(2)
+            Location.distanceBetween(
+                it.latitude,
+                it.longitude,
+                location.latitude,
+                location.longitude,
+                output
+            )
+            val distance = output[0]
+        }
+        lastLocation = location
+    }
+
     fun removeUpdates() {
         fusedClient.removeLocationUpdates(locationCallback)
+        lastLocation = null
+        speedMap.clear()
     }
 
     private val locationCallback = object : LocationCallback() {
 
         override fun onLocationAvailability(availability: LocationAvailability) {
-            Timber.d("onLocationAvailability $availability")
-            reference.get()?.onLocationAvailability(availability.isLocationAvailable)
+
         }
 
-        override fun onLocationResult(result: LocationResult?) {
-            result?.lastLocation?.let {
-                Timber.i("Last location is $it")
-                reference.get()?.onLocationResult(SimpleLocation(it))
-            }
+        override fun onLocationResult(result: LocationResult) {
+            onLocationChanged(result.lastLocation ?: return)
         }
     }
+}
+
+interface LocationListener {
+
+    fun onSpeedChanged(speed: Int)
 }

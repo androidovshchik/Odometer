@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.jakewharton.threetenabp.AndroidThreeTen
 import defpackage.odometer.local.Database
 import defpackage.odometer.local.Preferences
 import io.github.inflationx.calligraphy3.CalligraphyConfig
@@ -45,6 +46,7 @@ class MainApp : Application(), KodeinAware {
                 .getDeclaredMethod("initializeWithDefaults", Context::class.java)
                 .invoke(null, applicationContext)
         }
+        AndroidThreeTen.init(this)
         ViewPump.init(
             ViewPump.builder()
                 .addInterceptor(
