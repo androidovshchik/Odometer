@@ -1,20 +1,19 @@
 package defpackage.odometer
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import android.os.SystemClock
 import com.google.android.gms.location.*
 import defpackage.odometer.extensions.copyToArray
+import kotlinx.coroutines.*
+import timber.log.Timber
 import java.lang.ref.WeakReference
 import kotlin.math.min
 
 // in millis
 private const val MEASURE_TIME = 10_000L
 
-@SuppressLint("MissingPermission")
-@Suppress("MemberVisibilityCanBePrivate", "DEPRECATION")
-class LocationManager(context: Context) {
+class LocationManager(context: Context) : CoroutineScope {
 
     private var reference: WeakReference<LocationListener>? = null
 
@@ -29,6 +28,8 @@ class LocationManager(context: Context) {
     private val distancesList = mutableListOf<Float>()
 
     private var lastLocation: Location? = null
+
+    private val job = SupervisorJob()
 
     init {
         System.loadLibrary("main")
@@ -64,45 +65,61 @@ class LocationManager(context: Context) {
     }
 
     private fun onLocationChanged(location: Location) {
-        lastLocation?.let { lastLocation ->
-            val output = FloatArray(2)
-            Location.distanceBetween(
-                lastLocation.latitude,
-                lastLocation.longitude,
-                location.latitude,
-                location.longitude,
-                output
-            )
-            val now = SystemClock.elapsedRealtime()
-            val iterator = timeList.iterator()
-            for ((i, x) in iterator.withIndex()) {
-                if (x < now - MEASURE_TIME) {
-                    iterator.remove()
-                    distancesList.removeAt(i)
+        job.cancelChildren()
+        launch {
+            lastLocation?.let { lastLocation ->
+                val output = FloatArray(2)
+                Location.distanceBetween(
+                    lastLocation.latitude,
+                    lastLocation.longitude,
+                    location.latitude,
+                    location.longitude,
+                    output
+                )
+                val now = SystemClock.elapsedRealtime()
+                val iterator = timeList.iterator()
+                for ((i, x) in iterator.withIndex()) {
+                    if (x < now - MEASURE_TIME) {
+                        iterator.remove()
+                        distancesList.removeAt(i)
+                    }
+                }
+                timeList.add(now)
+                distancesList.add(output[0])
+                timeList.copyToArray(timeArray, -1L)
+                distancesList.copyToArray(distancesArray, 0f)
+                val size = min(timeArray.size, timeList.size)
+                if (size >= 2) {
+                    val speed = withContext(Dispatchers.Default) {
+                        getSpeed(size, timeArray, distancesArray)
+                    }
+                    reference?.get()?.onSpeedChanged(speed)
+                } else {
+                    reference?.get()?.onSpeedChanged(0)
                 }
             }
-            timeList.add(now)
-            distancesList.add(output[0])
-            timeList.copyToArray(timeArray, -1L)
-            distancesList.copyToArray(distancesArray, 0f)
-            val size = min(timeArray.size, timeList.size)
-            val speed = if (size >= 2) getSpeed(size, timeArray, distancesArray) else 0
-            reference?.get()?.onSpeedChanged(speed)
+            lastLocation = location
         }
-        lastLocation = location
     }
 
     fun removeUpdates() {
         fusedClient.removeLocationUpdates(locationCallback)
+        job.cancelChildren()
         lastLocation = null
         timeList.clear()
         distancesList.clear()
     }
 
     /**
+     * @param time in millis
+     * @param distances in meters
      * @return speed in km/h
      */
     private external fun getSpeed(size: Int, time: LongArray, distances: FloatArray): Int
+
+    override val coroutineContext = Dispatchers.Main + job + CoroutineExceptionHandler { _, e ->
+        Timber.e(e)
+    }
 
     private val locationCallback = object : LocationCallback() {
 
