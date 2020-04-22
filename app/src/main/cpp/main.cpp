@@ -1,46 +1,30 @@
 #include <jni.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-void getApprox(double **x, double *a, double *b, int n) {
-    double sumx = 0;
-    double sumy = 0;
-    double sumx2 = 0;
-    double sumxy = 0;
-    for (int i = 0; i < n; i++) {
-        sumx += x[0][i];
-        sumy += x[1][i];
-        sumx2 += x[0][i] * x[0][i];
-        sumxy += x[0][i] * x[1][i];
-    }
-    *a = (n * sumxy - (sumx * sumy)) / (n * sumx2 - sumx * sumx);
-    *b = (sumy - *a * sumx) / n;
-    return;
-}
 
 extern "C"
 
-JNIEXPORT jbyteArray JNICALL
-Java_defpackage_odometer_CAESCBC_encrypt(JNIEnv *env, jobject, jfloatArray xs, jfloatArray ys) {
-    double **x, a, b;
-    int n;
-    system("chcp 1251");
-    system("cls");
-    printf("Введите количество точек: ");
-    scanf("%d", &n);
-    x = getData(n);
-    for (int i = 0; i < n; i++)
-        printf("%5.1lf - %7.3lf\n", x[0][i], x[1][i]);
-    getApprox(x, &a, &b, n);
-    printf("a = %lf\nb = %lf", a, b);
-    uint8_t *dataBytes = (uint8_t *) env->GetByteArrayElements(data, 0);
-    uint8_t *keyBytes = (uint8_t *) env->GetByteArrayElements(key, 0);
-    uint8_t *ivBytes = (uint8_t *) env->GetByteArrayElements(iv, 0);
-    struct AES_ctx ctx;
-    AES_init_ctx_iv(&ctx, keyBytes, ivBytes);
-    AES_CBC_encrypt_buffer(&ctx, dataBytes, (uint32_t) env->GetArrayLength(data));
-    env->ReleaseByteArrayElements(data, (jbyte *) dataBytes, 0);
-    env->ReleaseByteArrayElements(key, (jbyte *) keyBytes, 0);
-    env->ReleaseByteArrayElements(iv, (jbyte *) ivBytes, 0);
-    return data;
+JNIEXPORT jfloatArray JNICALL
+Java_defpackage_odometer_LocationManager_approximate(JNIEnv *env, jobject, jint size,
+                                                     jfloatArray xa, jfloatArray ya) {
+    jfloat *x = env->GetFloatArrayElements(xa, 0);
+    jfloat *y = env->GetFloatArrayElements(ya, 0);
+    float sumX = 0;
+    float sumY = 0;
+    float sumX2 = 0;
+    float sumXY = 0;
+    for (int i = 0; i < size; i++) {
+        sumX += x[i];
+        sumY += y[i];
+        sumX2 += x[i] * x[i];
+        sumXY += x[i] * y[i];
+    }
+    jfloat result[2];
+    // y = A * x + b
+    result[0] = (size * sumXY - (sumX * sumY)) / (size * sumX2 - sumX * sumX);
+    // y = a * x + B
+    result[1] = (sumY - result[0] * sumX) / size;
+    jfloatArray output = env->NewFloatArray(2);
+    env->SetFloatArrayRegion(output, 0, 2, result);
+    env->ReleaseFloatArrayElements(xa, x, 0);
+    env->ReleaseFloatArrayElements(ya, y, 0);
+    return output;
 }
