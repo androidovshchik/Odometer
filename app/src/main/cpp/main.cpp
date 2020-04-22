@@ -11,7 +11,7 @@ JNIEXPORT jint JNICALL
 Java_defpackage_odometer_LocationManager_getSpeed(JNIEnv *env, jobject, jint size,
                                                   jlongArray time, jfloatArray distances) {
     if (size < 2) {
-        return 0;
+        return -1;
     }
     jlong *x = env->GetLongArrayElements(time, 0);
     jfloat *y = env->GetFloatArrayElements(distances, 0);
