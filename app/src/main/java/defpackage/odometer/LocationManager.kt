@@ -1,9 +1,11 @@
 package defpackage.odometer
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.location.Location
+import android.location.LocationManager
 import android.os.SystemClock
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.common.api.ResolvableApiException
@@ -12,6 +14,7 @@ import com.google.android.gms.tasks.OnSuccessListener
 import defpackage.odometer.extensions.areGranted
 import defpackage.odometer.extensions.copyToArray
 import kotlinx.coroutines.*
+import org.jetbrains.anko.locationManager
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import kotlin.math.min
@@ -24,6 +27,7 @@ private const val MEASURE_TIME = 10_000L
 // in millis
 private const val LOCATION_TIME = 3000L
 
+@SuppressLint("MissingPermission")
 class LocationManager(context: Context) : CoroutineScope,
     OnSuccessListener<LocationSettingsResponse> {
 
@@ -46,16 +50,22 @@ class LocationManager(context: Context) : CoroutineScope,
     private var startTime = 0L
 
     init {
-        // get at least 2 points and less than array size
-        require(MEASURE_TIME / LOCATION_TIME in 2..timeArray.size)
+        require(MEASURE_TIME / LOCATION_TIME in 2..timeArray.size) {
+            "Required at least 2 points and less than array size"
+        }
         System.loadLibrary("main")
-        fusedClient.lastLocation
-        /*listener.apply {
-            onLocationAvailability(gpsClient.isProviderEnabled(LocationManager.GPS_PROVIDER))
-            gpsClient.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {
-                onLocationChanged(it, satellitesCount)
+        if (context.areGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            val locationManager = context.locationManager
+            val isGpsAvailable = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+            val isNetworkAvailable =
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+            reference?.get()?.onLocationAvailability(isGpsAvailable || isNetworkAvailable)
+            val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+            if (location != null) {
+                onLocationChanged(location)
             }
-        }*/
+        }
     }
 
     /**
