@@ -6,7 +6,9 @@ import android.content.Context
 import android.location.Location
 import android.os.SystemClock
 import androidx.core.app.ActivityCompat
+import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
+import com.google.android.gms.tasks.OnSuccessListener
 import defpackage.odometer.extensions.areGranted
 import defpackage.odometer.extensions.copyToArray
 import kotlinx.coroutines.*
@@ -19,11 +21,17 @@ const val REQUEST_LOCATION = 123
 // in millis
 private const val MEASURE_TIME = 10_000L
 
-class LocationManager(context: Context) : CoroutineScope {
+// in millis
+private const val LOCATION_TIME = 3000L
+
+class LocationManager(context: Context) : CoroutineScope,
+    OnSuccessListener<LocationSettingsResponse> {
 
     private var reference: WeakReference<LocationListener>? = null
 
     private val fusedClient = LocationServices.getFusedLocationProviderClient(context)
+
+    private val job = SupervisorJob()
 
     private val timeArray = LongArray(10)
 
@@ -35,10 +43,13 @@ class LocationManager(context: Context) : CoroutineScope {
 
     private var lastLocation: Location? = null
 
-    private val job = SupervisorJob()
+    private var startTime = 0L
 
     init {
+        // get at least 2 points and less than array size
+        require(MEASURE_TIME / LOCATION_TIME in 2..timeArray.size)
         System.loadLibrary("main")
+        fusedClient.lastLocation
         /*listener.apply {
             onLocationAvailability(gpsClient.isProviderEnabled(LocationManager.GPS_PROVIDER))
             gpsClient.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {
@@ -54,12 +65,7 @@ class LocationManager(context: Context) : CoroutineScope {
         reference = WeakReference(listener)
     }
 
-    /**
-     * @param interval in millis
-     */
-    fun requestUpdates(context: Context, interval: Long) {
-        // get at least 2 points and less than max count
-        require(MEASURE_TIME / interval in 2..timeArray.size)
+    fun requestUpdates(context: Context) {
         if (!context.areGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
             if (context is Activity) {
                 ActivityCompat.requestPermissions(
@@ -69,9 +75,10 @@ class LocationManager(context: Context) : CoroutineScope {
             return
         }
         val request = LocationRequest.create()
-            .setInterval(interval)
-            .setFastestInterval(interval)
+            .setInterval(LOCATION_TIME)
+            .setFastestInterval(LOCATION_TIME)
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        startTime = SystemClock.elapsedRealtime()
         fusedClient.requestLocationUpdates(request, locationCallback, null)
         if (context is Activity) {
             LocationServices.getSettingsClient(context)
@@ -81,17 +88,12 @@ class LocationManager(context: Context) : CoroutineScope {
                         .setAlwaysShow(true)
                         .build()
                 )
-                .addOnSuccessListener {
-                    onLocationState(it.locationSettingsStates)
-                }
+                .addOnSuccessListener(this)
                 .addOnFailureListener {
-                    onLocationState(null)
+                    reference?.get()?.onLocationAvailability(false)
                     if (it is ResolvableApiException) {
                         try {
-                            it.startResolutionForResult(
-                                this,
-                                REQUEST_LOCATION
-                            )
+                            it.startResolutionForResult(context, REQUEST_LOCATION)
                         } catch (e: Throwable) {
                             Timber.e(e)
                         }
@@ -100,6 +102,10 @@ class LocationManager(context: Context) : CoroutineScope {
                     }
                 }
         }
+    }
+
+    override fun onSuccess(locationSettings: LocationSettingsResponse) {
+        reference?.get()?.onLocationAvailability(locationSettings.locationSettingsStates.)
     }
 
     private fun onLocationChanged(location: Location) {
