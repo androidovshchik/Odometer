@@ -11,6 +11,8 @@ import kotlin.math.min
 // in millis
 private const val MEASURE_TIME = 10_000L
 
+private const val POINTS_COUNT = 10
+
 @SuppressLint("MissingPermission")
 @Suppress("MemberVisibilityCanBePrivate", "DEPRECATION")
 class LocationManager(context: Context) {
@@ -19,9 +21,9 @@ class LocationManager(context: Context) {
 
     private val fusedClient = LocationServices.getFusedLocationProviderClient(context)
 
-    private val time = mutableListOf<Long>()
+    private val time = LongArray(POINTS_COUNT)
 
-    private val distances = mutableListOf<Float>()
+    private val distances = FloatArray(POINTS_COUNT)
 
     private var lastLocation: Location? = null
 
@@ -49,7 +51,8 @@ class LocationManager(context: Context) {
      * @param interval in millis
      */
     fun requestUpdates(interval: Long) {
-        require(interval < MEASURE_TIME / 2)
+        // get at least 2 points and less than max count
+        require(MEASURE_TIME / interval in 2..POINTS_COUNT)
         val request = LocationRequest.create()
             .setInterval(interval)
             .setFastestInterval(interval)
@@ -77,10 +80,11 @@ class LocationManager(context: Context) {
             }
             time.add(now)
             distances.add(output[0])
+            longArrayOf().fill()
             val size = min(time.size, distances.size)
             speedMap.put(SystemClock.elapsedRealtime(), output[0])
-            getSpeed(0, time.toFloatArray(), distances.toFloatArray())
-            reference?.get()?.onSpeedChanged(getSpeed(0, time!!, distances!!))
+            getSpeed(time.size, time.toLongArray(), distances.toFloatArray())
+            reference?.get()?.onSpeedChanged(getSpeed(0, time, distances))
         }
         lastLocation = location
     }
@@ -88,11 +92,9 @@ class LocationManager(context: Context) {
     fun removeUpdates() {
         fusedClient.removeLocationUpdates(locationCallback)
         lastLocation = null
-        time.clear()
-        distances.clear()
     }
 
-    private external fun getSpeed(size: Int, time: FloatArray, distances: FloatArray): Float
+    private external fun getSpeed(size: Int, time: LongArray, distances: FloatArray): Float
 
     private val locationCallback = object : LocationCallback() {
 
