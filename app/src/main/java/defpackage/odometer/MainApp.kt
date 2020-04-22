@@ -36,6 +36,10 @@ class MainApp : Application(), KodeinAware {
                 .fallbackToDestructiveMigration()
                 .build()
         }
+
+        bind<LocationManager>() with singleton {
+            LocationManager(instance())
+        }
     }
 
     override fun onCreate() {
