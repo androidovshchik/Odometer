@@ -86,14 +86,10 @@ class LocationManager(context: Context) : CoroutineScope {
                 timeList.copyToArray(timeArray, -1L)
                 distancesList.copyToArray(distancesArray, 0f)
                 val size = min(timeArray.size, timeList.size)
-                if (size >= 2) {
-                    val speed = withContext(Dispatchers.Default) {
-                        getSpeed(size, timeArray, distancesArray)
-                    }
-                    reference?.get()?.onSpeedChanged(speed)
-                } else {
-                    reference?.get()?.onSpeedChanged(0)
+                val speed = withContext(Dispatchers.Default) {
+                    getSpeed(size, timeArray, distancesArray)
                 }
+                reference?.get()?.onSpeedChanged(speed)
             }
             lastLocation = location
         }

@@ -1,4 +1,5 @@
 #include <jni.h>
+#include <cmath>
 
 /**
  * @param time in millis
@@ -9,6 +10,9 @@ extern "C"
 JNIEXPORT jint JNICALL
 Java_defpackage_odometer_LocationManager_getSpeed(JNIEnv *env, jobject, jint size,
                                                   jlongArray time, jfloatArray distances) {
+    if (size < 2) {
+        return 0;
+    }
     jlong *x = env->GetLongArrayElements(time, 0);
     jfloat *y = env->GetFloatArrayElements(distances, 0);
     float sumX = 0;
@@ -27,5 +31,5 @@ Java_defpackage_odometer_LocationManager_getSpeed(JNIEnv *env, jobject, jint siz
     float speed = (a * x[size - 1] + b) * 3600;
     env->ReleaseLongArrayElements(time, x, 0);
     env->ReleaseFloatArrayElements(distances, y, 0);
-    return speed;// km/h
+    return (int) round(speed);
 }
