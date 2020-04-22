@@ -7,11 +7,10 @@ import android.os.SystemClock
 import com.google.android.gms.location.*
 import defpackage.odometer.extensions.copyToArray
 import java.lang.ref.WeakReference
+import kotlin.math.min
 
 // in millis
 private const val MEASURE_TIME = 10_000L
-
-private const val POINTS_COUNT = 10
 
 @SuppressLint("MissingPermission")
 @Suppress("MemberVisibilityCanBePrivate", "DEPRECATION")
@@ -21,9 +20,9 @@ class LocationManager(context: Context) {
 
     private val fusedClient = LocationServices.getFusedLocationProviderClient(context)
 
-    private val timeArray = LongArray(POINTS_COUNT)
+    private val timeArray = LongArray(10)
 
-    private val distancesArray = FloatArray(POINTS_COUNT)
+    private val distancesArray = FloatArray(10)
 
     private val timeList = mutableListOf<Long>()
 
@@ -56,7 +55,7 @@ class LocationManager(context: Context) {
      */
     fun requestUpdates(interval: Long) {
         // get at least 2 points and less than max count
-        require(MEASURE_TIME / interval in 2..POINTS_COUNT)
+        require(MEASURE_TIME / interval in 2..timeArray.size)
         val request = LocationRequest.create()
             .setInterval(interval)
             .setFastestInterval(interval)
@@ -86,8 +85,9 @@ class LocationManager(context: Context) {
             distancesList.add(output[0])
             timeList.copyToArray(timeArray, -1L)
             distancesList.copyToArray(distancesArray, 0f)
-            getSpeed(timeList.size, timeArray, distancesArray)
-            reference?.get()?.onSpeedChanged(getSpeed(0, time, distances))
+            val size = min(timeArray.size, timeList.size)
+            val speed = if (size >= 2) getSpeed(size, timeArray, distancesArray) else 0
+            reference?.get()?.onSpeedChanged(speed)
         }
         lastLocation = location
     }
@@ -99,12 +99,15 @@ class LocationManager(context: Context) {
         distancesList.clear()
     }
 
-    private external fun getSpeed(size: Int, time: LongArray, distances: FloatArray): Float
+    /**
+     * @return speed in km/h
+     */
+    private external fun getSpeed(size: Int, time: LongArray, distances: FloatArray): Int
 
     private val locationCallback = object : LocationCallback() {
 
         override fun onLocationAvailability(availability: LocationAvailability) {
-
+            reference?.get()?.onLocationAvailability(availability.isLocationAvailable)
         }
 
         override fun onLocationResult(result: LocationResult) {
@@ -115,5 +118,10 @@ class LocationManager(context: Context) {
 
 interface LocationListener {
 
-    fun onSpeedChanged(speed: Float)
+    fun onLocationAvailability(available: Boolean)
+
+    /**
+     * @param speed in km/h
+     */
+    fun onSpeedChanged(speed: Int)
 }
