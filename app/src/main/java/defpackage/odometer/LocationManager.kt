@@ -105,7 +105,7 @@ class LocationManager(context: Context) : CoroutineScope,
     }
 
     override fun onSuccess(locationSettings: LocationSettingsResponse) {
-        reference?.get()?.onLocationAvailability(locationSettings.locationSettingsStates.)
+        reference?.get()?.onLocationStates(locationSettings.locationSettingsStates)
     }
 
     private fun onLocationChanged(location: Location) {
@@ -174,6 +174,8 @@ class LocationManager(context: Context) : CoroutineScope,
 }
 
 interface LocationListener {
+
+    fun onLocationStates(states: LocationSettingsStates?)
 
     fun onLocationAvailability(available: Boolean)
 

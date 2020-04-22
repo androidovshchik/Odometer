@@ -1,6 +1,8 @@
 package defpackage.odometer.screen.main
 
+import android.content.Intent
 import android.os.Bundle
+import com.google.android.gms.location.LocationSettingsStates
 import defpackage.odometer.LocationListener
 import defpackage.odometer.LocationManager
 import defpackage.odometer.R
@@ -23,7 +25,11 @@ class MainActivity : BaseActivity(), LocationListener {
 
     override fun onStart() {
         super.onStart()
-        locationManager.requestUpdates(applicationContext, 3000L)
+        locationManager.requestUpdates(this)
+    }
+
+    override fun onLocationStates(states: LocationSettingsStates?) {
+        onLocationAvailability(states?.isLocationUsable == true)
     }
 
     override fun onLocationAvailability(available: Boolean) {
@@ -45,8 +51,23 @@ class MainActivity : BaseActivity(), LocationListener {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_LOCATION) {
-            locationManager.requestUpdates(applicationContext, 3000L)
+        when (requestCode) {
+            REQUEST_LOCATION -> {
+                locationManager.requestUpdates(applicationContext)
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQUEST_LOCATION -> {
+                if (resultCode == RESULT_OK) {
+                    onLocationStates(LocationSettingsStates.fromIntent(data))
+                } else {
+                    locationManager.requestUpdates(this)
+                }
+            }
         }
     }
 }
