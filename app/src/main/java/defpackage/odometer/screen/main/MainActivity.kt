@@ -70,4 +70,9 @@ class MainActivity : BaseActivity(), LocationListener {
             }
         }
     }
+
+    override fun onDestroy() {
+        locationManager.clear()
+        super.onDestroy()
+    }
 }

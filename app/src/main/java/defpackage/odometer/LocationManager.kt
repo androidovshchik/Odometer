@@ -112,28 +112,28 @@ class LocationManager(context: Context) : CoroutineScope,
         job.cancelChildren()
         launch {
             lastLocation?.let { lastLocation ->
-                val output = FloatArray(2)
-                Location.distanceBetween(
-                    lastLocation.latitude,
-                    lastLocation.longitude,
-                    location.latitude,
-                    location.longitude,
-                    output
-                )
-                val now = SystemClock.elapsedRealtime()
-                val iterator = timeList.iterator()
-                for ((i, x) in iterator.withIndex()) {
-                    if (x < now - MEASURE_TIME) {
-                        iterator.remove()
-                        distancesList.removeAt(i)
-                    }
-                }
-                timeList.add(now)
-                distancesList.add(output[0])
-                timeList.copyToArray(timeArray, -1L)
-                distancesList.copyToArray(distancesArray, 0f)
-                val size = min(timeArray.size, timeList.size)
                 val speed = withContext(Dispatchers.Default) {
+                    val output = FloatArray(2)
+                    Location.distanceBetween(
+                        lastLocation.latitude,
+                        lastLocation.longitude,
+                        location.latitude,
+                        location.longitude,
+                        output
+                    )
+                    val now = SystemClock.elapsedRealtime()
+                    val iterator = timeList.iterator()
+                    for ((i, x) in iterator.withIndex()) {
+                        if (x < now - MEASURE_TIME) {
+                            iterator.remove()
+                            distancesList.removeAt(i)
+                        }
+                    }
+                    timeList.add(now)
+                    distancesList.add(output[0])
+                    timeList.copyToArray(timeArray, -1L)
+                    distancesList.copyToArray(distancesArray, 0f)
+                    val size = min(timeArray.size, timeList.size)
                     getSpeed(size, timeArray, distancesArray)
                 }
                 reference?.get()?.onSpeedChanged(speed)
@@ -148,6 +148,10 @@ class LocationManager(context: Context) : CoroutineScope,
         lastLocation = null
         timeList.clear()
         distancesList.clear()
+    }
+
+    fun clear() {
+        reference?.clear()
     }
 
     /**
