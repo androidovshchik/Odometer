@@ -7,6 +7,8 @@ fun List<Long>.copyToArray(array: LongArray, placeholder: Long) {
     forEachIndexed { i, value ->
         if (i < array.size) {
             array[i] = value
+        } else {
+            return
         }
     }
 }
@@ -16,6 +18,8 @@ fun List<Float>.copyToArray(array: FloatArray, placeholder: Float) {
     forEachIndexed { i, value ->
         if (i < array.size) {
             array[i] = value
+        } else {
+            return
         }
     }
 }

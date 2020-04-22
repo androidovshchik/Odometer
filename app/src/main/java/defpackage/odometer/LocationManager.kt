@@ -33,9 +33,6 @@ class LocationManager(context: Context) : CoroutineScope {
 
     init {
         System.loadLibrary("main")
-    }
-
-    init {
         /*listener.apply {
             onLocationAvailability(gpsClient.isProviderEnabled(LocationManager.GPS_PROVIDER))
             gpsClient.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {

@@ -1,30 +1,31 @@
 #include <jni.h>
 
+/**
+ * @param time in millis
+ * @param distances in meters
+ * @return speed in km/h
+ */
 extern "C"
-
-JNIEXPORT jfloatArray JNICALL
-Java_defpackage_odometer_LocationManager_approximate(JNIEnv *env, jobject, jint size,
-                                                     jfloatArray xa, jfloatArray ya) {
-    jfloat *x = env->GetFloatArrayElements(xa, 0);
-    jfloat *y = env->GetFloatArrayElements(ya, 0);
+JNIEXPORT jint JNICALL
+Java_defpackage_odometer_LocationManager_getSpeed(JNIEnv *env, jobject, jint size,
+                                                  jlongArray time, jfloatArray distances) {
+    jlong *x = env->GetLongArrayElements(time, 0);
+    jfloat *y = env->GetFloatArrayElements(distances, 0);
     float sumX = 0;
     float sumY = 0;
     float sumX2 = 0;
     float sumXY = 0;
     for (int i = 0; i < size; i++) {
+        float speed = y[i] / x[i];
         sumX += x[i];
-        sumY += y[i];
+        sumY += speed;
         sumX2 += x[i] * x[i];
-        sumXY += x[i] * y[i];
+        sumXY += x[i] * speed;
     }
-    jfloat result[2];
-    // y = A * x + b
-    result[0] = (size * sumXY - (sumX * sumY)) / (size * sumX2 - sumX * sumX);
-    // y = a * x + B
-    result[1] = (sumY - result[0] * sumX) / size;
-    jfloatArray output = env->NewFloatArray(2);
-    env->SetFloatArrayRegion(output, 0, 2, result);
-    env->ReleaseFloatArrayElements(xa, x, 0);
-    env->ReleaseFloatArrayElements(ya, y, 0);
-    return output;
+    float a = (size * sumXY - (sumX * sumY)) / (size * sumX2 - sumX * sumX);
+    float b = (sumY - a * sumX) / size;
+    float speed = (a * x[size - 1] + b) * 3600;
+    env->ReleaseLongArrayElements(time, x, 0);
+    env->ReleaseFloatArrayElements(distances, y, 0);
+    return speed;// km/h
 }
