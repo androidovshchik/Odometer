@@ -1,11 +1,10 @@
 package defpackage.odometer.screen.main
 
-import android.Manifest
 import android.os.Bundle
-import androidx.core.app.ActivityCompat
 import defpackage.odometer.LocationListener
 import defpackage.odometer.LocationManager
 import defpackage.odometer.R
+import defpackage.odometer.REQUEST_LOCATION
 import defpackage.odometer.screen.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import org.kodein.di.generic.instance
@@ -20,16 +19,11 @@ class MainActivity : BaseActivity(), LocationListener {
         setContentView(R.layout.activity_main)
         vp_main.adapter = TabsAdapter(fragmentManager)
         locationManager.setLocationListener(this)
-        ActivityCompat.requestPermissions(
-            this, arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ), 0
-        )
     }
 
     override fun onStart() {
         super.onStart()
-        locationManager.requestUpdates()
+        locationManager.requestUpdates(applicationContext, 3000L)
     }
 
     override fun onLocationAvailability(available: Boolean) {
@@ -51,5 +45,8 @@ class MainActivity : BaseActivity(), LocationListener {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_LOCATION) {
+            locationManager.requestUpdates(applicationContext, 3000L)
+        }
     }
 }

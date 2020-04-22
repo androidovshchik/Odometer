@@ -20,13 +20,13 @@ abstract class BaseAdapter<T : IAdapter<E>, E> : RecyclerView.Adapter<BaseHolder
     constructor()
 
     constructor(listener: T) {
-        setListener(listener)
+        setAdapterListener(listener)
     }
 
     /**
      * It is assumed that this will be called one time or never
      */
-    fun setListener(listener: T) {
+    fun setAdapterListener(listener: T) {
         reference = WeakReference(listener)
     }
 

@@ -1,14 +1,20 @@
 package defpackage.odometer
 
+import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.location.Location
 import android.os.SystemClock
+import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
+import defpackage.odometer.extensions.areGranted
 import defpackage.odometer.extensions.copyToArray
 import kotlinx.coroutines.*
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import kotlin.math.min
+
+const val REQUEST_LOCATION = 123
 
 // in millis
 private const val MEASURE_TIME = 10_000L
@@ -51,14 +57,49 @@ class LocationManager(context: Context) : CoroutineScope {
     /**
      * @param interval in millis
      */
-    fun requestUpdates(interval: Long) {
+    fun requestUpdates(context: Context, interval: Long) {
         // get at least 2 points and less than max count
         require(MEASURE_TIME / interval in 2..timeArray.size)
+        if (!context.areGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            if (context is Activity) {
+                ActivityCompat.requestPermissions(
+                    context, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION
+                )
+            }
+            return
+        }
         val request = LocationRequest.create()
             .setInterval(interval)
             .setFastestInterval(interval)
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
         fusedClient.requestLocationUpdates(request, locationCallback, null)
+        if (context is Activity) {
+            LocationServices.getSettingsClient(context)
+                .checkLocationSettings(
+                    LocationSettingsRequest.Builder()
+                        .addLocationRequest(request)
+                        .setAlwaysShow(true)
+                        .build()
+                )
+                .addOnSuccessListener {
+                    onLocationState(it.locationSettingsStates)
+                }
+                .addOnFailureListener {
+                    onLocationState(null)
+                    if (it is ResolvableApiException) {
+                        try {
+                            it.startResolutionForResult(
+                                this,
+                                REQUEST_LOCATION
+                            )
+                        } catch (e: Throwable) {
+                            Timber.e(e)
+                        }
+                    } else {
+                        Timber.e(it)
+                    }
+                }
+        }
     }
 
     private fun onLocationChanged(location: Location) {
