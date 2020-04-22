@@ -5,8 +5,8 @@ import android.content.Context
 import android.location.Location
 import android.os.SystemClock
 import com.google.android.gms.location.*
+import defpackage.odometer.extensions.copyToArray
 import java.lang.ref.WeakReference
-import kotlin.math.min
 
 // in millis
 private const val MEASURE_TIME = 10_000L
@@ -21,9 +21,13 @@ class LocationManager(context: Context) {
 
     private val fusedClient = LocationServices.getFusedLocationProviderClient(context)
 
-    private val time = LongArray(POINTS_COUNT)
+    private val timeArray = LongArray(POINTS_COUNT)
 
-    private val distances = FloatArray(POINTS_COUNT)
+    private val distancesArray = FloatArray(POINTS_COUNT)
+
+    private val timeList = mutableListOf<Long>()
+
+    private val distancesList = mutableListOf<Float>()
 
     private var lastLocation: Location? = null
 
@@ -71,19 +75,18 @@ class LocationManager(context: Context) {
                 output
             )
             val now = SystemClock.elapsedRealtime()
-            val iterator = time.iterator()
+            val iterator = timeList.iterator()
             for ((i, x) in iterator.withIndex()) {
                 if (x < now - MEASURE_TIME) {
                     iterator.remove()
-                    distances.removeAt(i)
+                    distancesList.removeAt(i)
                 }
             }
-            time.add(now)
-            distances.add(output[0])
-            longArrayOf().fill()
-            val size = min(time.size, distances.size)
-            speedMap.put(SystemClock.elapsedRealtime(), output[0])
-            getSpeed(time.size, time.toLongArray(), distances.toFloatArray())
+            timeList.add(now)
+            distancesList.add(output[0])
+            timeList.copyToArray(timeArray, -1L)
+            distancesList.copyToArray(distancesArray, 0f)
+            getSpeed(timeList.size, timeArray, distancesArray)
             reference?.get()?.onSpeedChanged(getSpeed(0, time, distances))
         }
         lastLocation = location
@@ -92,6 +95,8 @@ class LocationManager(context: Context) {
     fun removeUpdates() {
         fusedClient.removeLocationUpdates(locationCallback)
         lastLocation = null
+        timeList.clear()
+        distancesList.clear()
     }
 
     private external fun getSpeed(size: Int, time: LongArray, distances: FloatArray): Float
