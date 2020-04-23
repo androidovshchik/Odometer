@@ -2,14 +2,6 @@
 
 package defpackage.odometer.extensions
 
-inline fun FloatArray.removeAll(predicate: (Float) -> Boolean) {
-    (0 until size).forEach {
-        if (predicate(get(it))) {
-            set(it, -1f)
-        }
-    }
-}
-
 fun FloatArray.shiftLeft() {
     var i = -1
     forEach {
