@@ -5,16 +5,16 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.location.Location
-import android.location.LocationManager
 import android.os.SystemClock
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.OnSuccessListener
+import defpackage.odometer.extensions.add
 import defpackage.odometer.extensions.areGranted
-import defpackage.odometer.extensions.copyToArray
+import defpackage.odometer.extensions.removeAll
+import defpackage.odometer.extensions.shiftLeft
 import kotlinx.coroutines.*
-import org.jetbrains.anko.locationManager
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import kotlin.math.min
@@ -41,10 +41,6 @@ class LocationManager(context: Context) : CoroutineScope,
 
     private val distanceArray = FloatArray(10)
 
-    private val timeList = mutableListOf<Long>()
-
-    private val distanceList = mutableListOf<Float>()
-
     private var lastLocation: Location? = null
 
     init {
@@ -52,18 +48,8 @@ class LocationManager(context: Context) : CoroutineScope,
             "At least 2 measurements are required in time and less than the size of the array"
         }
         System.loadLibrary("main")
-        if (context.areGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
-            val locationManager = context.locationManager
-            val isGpsAvailable = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-            val isNetworkAvailable =
-                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-            reference?.get()?.onLocationAvailability(isGpsAvailable || isNetworkAvailable)
-            val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-                ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-            if (location != null) {
-                onLocationChanged(location)
-            }
-        }
+        timeArray.fill(-1L)
+        distanceArray.fill(-1f)
     }
 
     /**
@@ -82,8 +68,8 @@ class LocationManager(context: Context) : CoroutineScope,
             }
             return
         }
-        timeList.add(SystemClock.elapsedRealtime())
-        distanceList.add(0f)
+        timeArray[0] = SystemClock.elapsedRealtime()
+        distanceArray[0] = 0f
         val request = LocationRequest.create()
             .setInterval(LOCATION_TIME)
             .setFastestInterval(LOCATION_TIME)
@@ -131,19 +117,19 @@ class LocationManager(context: Context) : CoroutineScope,
                         output
                     )
                     val now = SystemClock.elapsedRealtime()
-                    val iterator = timeList.iterator()
-                    for ((i, time) in iterator.withIndex()) {
-                        if (time < now - MEASURE_TIME) {
-                            iterator.remove()
-                            distanceList.removeAt(i)
-                        }
-                    }
-                    timeList.add(now)
-                    distanceList.add(output[0])
-                    timeList.copyToArray(timeArray, -1L)
-                    distanceList.copyToArray(distanceArray, 0f)
-                    val size = min(timeArray.size, timeList.size)
-                    getSpeed(size, timeArray, distanceArray)
+                    timeArray.removeAll { it < now - MEASURE_TIME }
+                    distanceArray.removeAll { it < now - MEASURE_TIME }
+                    timeArray.shiftLeft()
+                    distanceArray.shiftLeft()
+                    timeArray.add(now)
+                    distanceArray.add(output[0])
+                    val size = min(timeArray.size, timeArray.indexOfFirst { it < 0 })
+                    getSpeed(
+                        BuildConfig.DEBUG,
+                        timeArray.indexOfFirst { },
+                        timeArray,
+                        distanceArray
+                    )
                 }
                 reference?.get()?.onSpeedChanged(speed)
             }
@@ -155,13 +141,12 @@ class LocationManager(context: Context) : CoroutineScope,
         fusedClient.removeLocationUpdates(locationCallback)
         job.cancelChildren()
         lastLocation = null
-        timeList.clear()
-        distanceList.clear()
     }
 
     fun clear() {
-        removeUpdates()
         reference?.clear()
+        timeArray.fill(-1L)
+        distanceArray.fill(-1f)
     }
 
     /**
@@ -169,7 +154,12 @@ class LocationManager(context: Context) : CoroutineScope,
      * @param distances in meters
      * @return speed in km/h
      */
-    private external fun getSpeed(size: Int, time: LongArray, distances: FloatArray): Int
+    private external fun getSpeed(
+        log: Boolean,
+        size: Int,
+        time: LongArray,
+        distances: FloatArray
+    ): Int
 
     override val coroutineContext = Dispatchers.Main + job + CoroutineExceptionHandler { _, e ->
         Timber.e(e)

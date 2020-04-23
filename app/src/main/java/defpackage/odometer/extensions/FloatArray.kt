@@ -13,7 +13,7 @@ inline fun FloatArray.removeAll(predicate: (Float) -> Boolean) {
 fun FloatArray.shiftLeft() {
     var i = -1
     forEach {
-        if (it > 0) {
+        if (it > -0.1f) {
             set(++i, it)
         }
     }
@@ -23,7 +23,7 @@ fun FloatArray.shiftLeft() {
 }
 
 fun FloatArray.add(value: Float) {
-    val i = indexOfFirst { it < 0 }
+    val i = indexOfFirst { it < -0.1f }
     if (i >= 0) {
         set(i, value)
     }
