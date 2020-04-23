@@ -19,8 +19,8 @@ Java_defpackage_odometer_LocationManager_getSpeed(JNIEnv *env, jobject, jint siz
     float sumY = 0;
     float sumX2 = 0;
     float sumXY = 0;
-    for (int i = 0; i < size - 1; i++) {
-        float speed = y[i] / (x[i + 1] - x[i]);
+    for (int i = 1; i < size; i++) {
+        float speed = y[i] / (x[i] - x[i - 1]);
         sumX += x[i];
         sumY += speed;
         sumX2 += x[i] * x[i];
@@ -29,7 +29,7 @@ Java_defpackage_odometer_LocationManager_getSpeed(JNIEnv *env, jobject, jint siz
     // y = a * x + b
     float a = (size * sumXY - (sumX * sumY)) / (size * sumX2 - sumX * sumX);
     float b = (sumY - a * sumX) / size;
-    int speed = (int) round((a * x[size - 1] + b) * 360);
+    int speed = (int) round((a * x[size - 1] + b) * 3600);
     env->ReleaseLongArrayElements(time, x, 0);
     env->ReleaseFloatArrayElements(distances, y, 0);
     return speed;
