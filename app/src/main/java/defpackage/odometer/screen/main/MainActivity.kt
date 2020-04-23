@@ -2,6 +2,8 @@ package defpackage.odometer.screen.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.WindowManager
+import androidx.core.util.forEach
 import com.google.android.gms.location.LocationSettingsStates
 import defpackage.odometer.LocationListener
 import defpackage.odometer.LocationManager
@@ -16,10 +18,14 @@ class MainActivity : BaseActivity(), LocationListener {
 
     private val locationManager by instance<LocationManager>()
 
+    private lateinit var adapter: TabsAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        adapter = TabsAdapter(fragmentManager)
         setContentView(R.layout.activity_main)
-        vp_main.adapter = TabsAdapter(fragmentManager)
+        vp_main.adapter = adapter
         locationManager.setLocationListener(this)
     }
 
@@ -37,7 +43,9 @@ class MainActivity : BaseActivity(), LocationListener {
     }
 
     override fun onSpeedChanged(speed: Int) {
-
+        adapter.fragments.forEach { _, fragment ->
+            fragment.onSpeedChanged(speed)
+        }
     }
 
     override fun onStop() {
