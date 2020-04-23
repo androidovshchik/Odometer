@@ -17,7 +17,6 @@ import defpackage.odometer.extensions.shiftLeft
 import kotlinx.coroutines.*
 import timber.log.Timber
 import java.lang.ref.WeakReference
-import kotlin.math.min
 
 const val REQUEST_LOCATION = 123
 
@@ -123,13 +122,14 @@ class LocationManager(context: Context) : CoroutineScope,
                     distanceArray.shiftLeft()
                     timeArray.add(now)
                     distanceArray.add(output[0])
-                    val size = min(timeArray.size, timeArray.indexOfFirst { it < 0 })
-                    getSpeed(
-                        BuildConfig.DEBUG,
-                        timeArray.indexOfFirst { },
-                        timeArray,
-                        distanceArray
-                    )
+                    val size = timeArray.indexOfFirst { it < 0L }
+                        .let { if (it < 0) timeArray.size else it }
+                    if (BuildConfig.DEBUG) {
+                        Timber.d("size $size")
+                        Timber.d(timeArray.toList().toString())
+                        Timber.d(distanceArray.toList().toString())
+                    }
+                    getSpeed(BuildConfig.DEBUG, size, timeArray, distanceArray)
                 }
                 reference?.get()?.onSpeedChanged(speed)
             }
