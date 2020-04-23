@@ -14,8 +14,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="12dp"
-        android:background="@drawable/text_background"
+        android:background="@drawable/defbackground"
         android:gravity="center"
+        android:hint="(км/ч)"
         android:imeOptions="actionNext"
         android:inputType="number"
         android:maxLength="3"
@@ -28,15 +29,16 @@
         android:textColor="@color/colorAccent"
         android:textSize="18sp"
         android:textStyle="bold"
-        tools:text="6" />
+        tools:text="60" />
 
     <EditText
         android:id="@+id/et_distance"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="@drawable/text_background"
+        android:background="@drawable/defbackground"
         android:gravity="center"
+        android:hint="Координата (км)"
         android:imeOptions="actionDone"
         android:inputType="numberDecimal"
         android:maxLines="1"

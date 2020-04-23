@@ -17,26 +17,27 @@
         android:paddingBottom="6dp">
 
         <TextView
+            android:id="@+id/tv_gps"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:layout_marginEnd="12dp"
-            android:background="@drawable/text_background"
             android:gravity="center"
             android:paddingStart="12dp"
             android:paddingTop="6dp"
             android:paddingEnd="12dp"
             android:paddingBottom="6dp"
             android:text="GPS"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@android:color/white"
             android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:background="@drawable/defbackground_accent" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/text_background"
+            android:background="@drawable/defbackground"
             android:gravity="center"
             android:paddingStart="16dp"
             android:paddingTop="12dp"
@@ -57,10 +58,11 @@
         android:padding="12dp">
 
         <TextView
+            android:id="@+id/tv_1"
             fontPath="bicycle.ttf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/text_background"
+            android:background="@drawable/defbackground"
             android:gravity="center"
             android:minWidth="100dp"
             android:paddingStart="16dp"
@@ -78,10 +80,11 @@
             android:layout_weight="1" />
 
         <TextView
+            android:id="@+id/tv_2"
             fontPath="bicycle.ttf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/text_background"
+            android:background="@drawable/defbackground"
             android:gravity="center"
             android:minWidth="100dp"
             android:paddingStart="16dp"
@@ -99,10 +102,11 @@
             android:layout_weight="1" />
 
         <TextView
+            android:id="@+id/tv_3"
             fontPath="bicycle.ttf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/text_background"
+            android:background="@drawable/defbackground"
             android:gravity="center"
             android:minWidth="100dp"
             android:paddingStart="16dp"
