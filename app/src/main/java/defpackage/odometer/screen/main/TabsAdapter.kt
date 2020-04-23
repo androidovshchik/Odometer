@@ -3,14 +3,14 @@
 package defpackage.odometer.screen.main
 
 import android.app.FragmentManager
+import android.util.SparseArray
 import android.view.View
 import android.view.ViewGroup
-import androidx.collection.SimpleArrayMap
 import androidx.legacy.app.FragmentPagerAdapter
 
 class TabsAdapter(manager: FragmentManager) : FragmentPagerAdapter(manager) {
 
-    val fragments = SimpleArrayMap<Int, LocationFragment>()
+    val fragments = SparseArray<LocationFragment>()
 
     override fun getItem(position: Int): LocationFragment {
         var fragment = fragments.get(position)

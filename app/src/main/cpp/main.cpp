@@ -51,7 +51,7 @@ Java_defpackage_odometer_LocationManager_getSpeed(JNIEnv *env, jobject, jboolean
             speed = 0;
         }
         if (log) {
-            d("speed[%i] = %f km/h", i - 1, speed * 3600);
+            d("speed[%i] = %f km/h", i, speed * 3600);
         }
         sumX += x[i];
         sumY += speed;
