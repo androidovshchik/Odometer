@@ -26,7 +26,13 @@ Java_defpackage_odometer_LocationManager_getSpeed(JNIEnv *env, jobject, jboolean
     jlong *x = env->GetLongArrayElements(time, 0);
     jfloat *y = env->GetFloatArrayElements(distances, 0);
     if (size == 2) {
-        float speed = y[1] / (x[1] - x[0]);
+        int64_t duration = x[1] - x[0];
+        float speed;
+        if (duration > 0) {
+            speed = y[1] / duration;
+        } else {
+            speed = 0;
+        }
         env->ReleaseLongArrayElements(time, x, 0);
         env->ReleaseFloatArrayElements(distances, y, 0);
         return mms2kmh(speed);
@@ -36,7 +42,13 @@ Java_defpackage_odometer_LocationManager_getSpeed(JNIEnv *env, jobject, jboolean
     float sumX2 = 0;
     float sumXY = 0;
     for (int i = 1; i < size; i++) {
-        float speed = y[i] / (x[i] - x[i - 1]);
+        int64_t duration = x[i] - x[i - 1];
+        float speed;
+        if (duration > 0) {
+            speed = y[i] / duration;
+        } else {
+            speed = 0;
+        }
         if (log) {
             d("speed[%i] = %f km/h", i - 1, speed * 3600);
         }
@@ -47,7 +59,13 @@ Java_defpackage_odometer_LocationManager_getSpeed(JNIEnv *env, jobject, jboolean
     }
     int count = size - 1;
     // y = a * x + b
-    float a = (count * sumXY - (sumX * sumY)) / (count * sumX2 - sumX * sumX);
+    float denominator = count * sumX2 - sumX * sumX;
+    float a;
+    if (denominator != 0) {
+        a = (count * sumXY - sumX * sumY) / denominator;
+    } else {
+        a = 0;
+    }
     float b = (sumY - a * sumX) / count;
     int64_t moment = x[size - 1];
     if (log) {
