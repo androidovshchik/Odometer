@@ -5,7 +5,7 @@ package defpackage.odometer.extensions
 fun LongArray.shiftLeft() {
     var i = -1
     forEach {
-        if (it > 0) {
+        if (it >= 0) {
             set(++i, it)
         }
     }

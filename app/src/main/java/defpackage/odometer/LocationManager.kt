@@ -5,13 +5,13 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.location.Location
-import android.os.SystemClock
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.OnSuccessListener
 import defpackage.odometer.extensions.add
 import defpackage.odometer.extensions.areGranted
+import defpackage.odometer.extensions.pseudoElapsedTime
 import defpackage.odometer.extensions.shiftLeft
 import kotlinx.coroutines.*
 import timber.log.Timber
@@ -104,16 +104,16 @@ class LocationManager(context: Context) : CoroutineScope,
         launch {
             val speed = withContext(Dispatchers.Default) {
                 val distance = locationTime.getDistance(location)
-                val now = SystemClock.elapsedRealtime()
+                val pseudoNow = pseudoElapsedTime()
                 timeArray.forEachIndexed { i, value ->
-                    if (value < now - MEASURE_TIME) {
+                    if (value < pseudoNow - MEASURE_TIME) {
                         timeArray[i] = -1L
                         distanceArray[i] = -1f
                     }
                 }
                 timeArray.shiftLeft()
                 distanceArray.shiftLeft()
-                timeArray.add(now)
+                timeArray.add(pseudoNow)
                 distanceArray.add(distance)
                 val size = timeArray.indexOfFirst { it < 0L }
                     .let { if (it < 0) timeArray.size else it }
@@ -133,7 +133,7 @@ class LocationManager(context: Context) : CoroutineScope,
         job.cancelChildren()
     }
 
-    fun clear() {
+    fun release() {
         reference?.clear()
     }
 
