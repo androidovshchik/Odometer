@@ -3,7 +3,6 @@ package defpackage.odometer
 import android.location.Location
 import android.os.SystemClock
 
-@Suppress("MemberVisibilityCanBePrivate")
 class LocationTime {
 
     private var lat = 0.0

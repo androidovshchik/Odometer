@@ -66,8 +66,6 @@ class LocationManager(context: Context) : CoroutineScope,
             }
             return
         }
-        timeArray[0] = SystemClock.elapsedRealtime()
-        distanceArray[0] = 0f
         val request = LocationRequest.create()
             .setInterval(LOCATION_TIME)
             .setFastestInterval(LOCATION_TIME)
