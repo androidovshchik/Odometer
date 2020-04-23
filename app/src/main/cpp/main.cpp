@@ -1,5 +1,13 @@
 #include <jni.h>
+#include <android/log.h>
 #include <cmath>
+
+#define TAG "CPP"
+
+#define d(log, ...) if (log) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
+#define i(log, ...) if (log) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
+#define w(log, ...) if (log) __android_log_print(ANDROID_LOG_WARN, TAG, __VA_ARGS__)
+#define e(log, ...) if (log) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
 
 /**
  * @param time in millis
@@ -8,7 +16,7 @@
  */
 extern "C"
 JNIEXPORT jint JNICALL
-Java_defpackage_odometer_LocationManager_getSpeed(JNIEnv *env, jobject, jint size,
+Java_defpackage_odometer_LocationManager_getSpeed(JNIEnv *env, jobject, jboolean log, jint size,
                                                   jlongArray time, jfloatArray distances) {
     if (size < 2) {
         return 0;
