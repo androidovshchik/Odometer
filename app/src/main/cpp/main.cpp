@@ -45,14 +45,15 @@ Java_defpackage_odometer_LocationManager_getSpeed(JNIEnv *env, jobject, jboolean
         sumX2 += x[i] * x[i];
         sumXY += x[i] * speed;
     }
-    size--;
+    int count = size - 1;
     // y = a * x + b
-    float a = (size * sumXY - (sumX * sumY)) / (size * sumX2 - sumX * sumX);
-    float b = (sumY - a * sumX) / size;
+    float a = (count * sumXY - (sumX * sumY)) / (count * sumX2 - sumX * sumX);
+    float b = (sumY - a * sumX) / count;
+    int64_t moment = x[size - 1];
     if (log) {
-        d("y = %f * x + %f", a, b);
+        d("y = %f * %jd + %f", a, moment, b);
     }
-    float speed = (a * x[size - 1] + b) * 3600;
+    float speed = a * moment + b;
     env->ReleaseLongArrayElements(time, x, 0);
     env->ReleaseFloatArrayElements(distances, y, 0);
     return mms2kmh(speed);
