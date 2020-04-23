@@ -2,6 +2,14 @@
 
 package defpackage.odometer.extensions
 
+inline fun FloatArray.removeAll(predicate: (Float) -> Boolean) {
+    (0 until size).forEach {
+        if (predicate(get(it))) {
+            set(it, -1f)
+        }
+    }
+}
+
 fun FloatArray.shiftLeft() {
     (0 until size).forEach {
         if (it < size - 1) {
@@ -13,15 +21,8 @@ fun FloatArray.shiftLeft() {
 }
 
 fun FloatArray.add(value: Float) {
-    (0 until size).forEach {
-        if (get(it) < 0) {
-            set(it, value)
-        }
-    }
-}
-
-fun FloatArray.clear() {
-    (0 until size).forEach {
-        set(it, -1f)
+    val i = indexOfFirst { it < 0 }
+    if (i >= 0) {
+        set(i, value)
     }
 }
