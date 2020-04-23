@@ -12,7 +12,6 @@ import com.google.android.gms.location.*
 import com.google.android.gms.tasks.OnSuccessListener
 import defpackage.odometer.extensions.add
 import defpackage.odometer.extensions.areGranted
-import defpackage.odometer.extensions.removeAll
 import defpackage.odometer.extensions.shiftLeft
 import kotlinx.coroutines.*
 import timber.log.Timber
@@ -21,7 +20,7 @@ import java.lang.ref.WeakReference
 const val REQUEST_LOCATION = 123
 
 // in millis
-private const val MEASURE_TIME = 10_000L
+const val MEASURE_TIME = 10_000L
 
 // in millis
 private const val LOCATION_TIME = 3000L
@@ -40,7 +39,7 @@ class LocationManager(context: Context) : CoroutineScope,
 
     private val distanceArray = FloatArray(10)
 
-    private var lastLocation: Location? = null
+    private val locationTime = LocationTime()
 
     init {
         require(MEASURE_TIME / LOCATION_TIME in 2..timeArray.size) {
@@ -105,48 +104,39 @@ class LocationManager(context: Context) : CoroutineScope,
     private fun onLocationChanged(location: Location) {
         job.cancelChildren()
         launch {
-            lastLocation?.let { lastLocation ->
-                val speed = withContext(Dispatchers.Default) {
-                    val output = FloatArray(2)
-                    Location.distanceBetween(
-                        lastLocation.latitude,
-                        lastLocation.longitude,
-                        location.latitude,
-                        location.longitude,
-                        output
-                    )
-                    val now = SystemClock.elapsedRealtime()
-                    timeArray.removeAll { it < now - MEASURE_TIME }
-                    distanceArray.removeAll { it < now - MEASURE_TIME }
-                    timeArray.shiftLeft()
-                    distanceArray.shiftLeft()
-                    timeArray.add(now)
-                    distanceArray.add(output[0])
-                    val size = timeArray.indexOfFirst { it < 0L }
-                        .let { if (it < 0) timeArray.size else it }
-                    if (BuildConfig.DEBUG) {
-                        Timber.d("size $size")
-                        Timber.d(timeArray.toList().toString())
-                        Timber.d(distanceArray.toList().toString())
+            val speed = withContext(Dispatchers.Default) {
+                val distance = locationTime.getDistance(location)
+                val now = SystemClock.elapsedRealtime()
+                timeArray.forEachIndexed { i, value ->
+                    if (value < now - MEASURE_TIME) {
+                        timeArray[i] = -1L
+                        distanceArray[i] = -1f
                     }
-                    getSpeed(BuildConfig.DEBUG, size, timeArray, distanceArray)
                 }
-                reference?.get()?.onSpeedChanged(speed)
+                timeArray.shiftLeft()
+                distanceArray.shiftLeft()
+                timeArray.add(now)
+                distanceArray.add(distance)
+                val size = timeArray.indexOfFirst { it < 0L }
+                    .let { if (it < 0) timeArray.size else it }
+                if (BuildConfig.DEBUG) {
+                    Timber.d("size $size")
+                    Timber.d(timeArray.toList().toString())
+                    Timber.d(distanceArray.toList().toString())
+                }
+                getSpeed(BuildConfig.DEBUG, size, timeArray, distanceArray)
             }
-            lastLocation = location
+            reference?.get()?.onSpeedChanged(speed)
         }
     }
 
     fun removeUpdates() {
         fusedClient.removeLocationUpdates(locationCallback)
         job.cancelChildren()
-        lastLocation = null
     }
 
     fun clear() {
         reference?.clear()
-        timeArray.fill(-1L)
-        distanceArray.fill(-1f)
     }
 
     /**

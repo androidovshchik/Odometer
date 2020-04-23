@@ -15,7 +15,7 @@ class LocationTime {
     private val output = FloatArray(1)
 
     init {
-        clear()
+        output.fill(0f)
     }
 
     /**
@@ -32,9 +32,5 @@ class LocationTime {
         lon = location.longitude
         lastTime = now
         return output[0]
-    }
-
-    fun clear() {
-        output.fill(0f)
     }
 }
