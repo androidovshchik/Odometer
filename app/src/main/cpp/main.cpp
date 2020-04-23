@@ -12,6 +12,7 @@
 #define mms2kmh(speed) (int) round(speed * 3600)
 
 /**
+ * Linear approximation with method of the least squares
  * @param time in millis
  * @param distances in meters
  * @return speed in km/h

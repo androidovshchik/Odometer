@@ -119,11 +119,12 @@ class LocationManager(context: Context) : CoroutineScope,
                     .let { if (it < 0) timeArray.size else it }
                 if (BuildConfig.DEBUG) {
                     Timber.d("size $size")
-                    Timber.d(timeArray.toList().toString())
                     Timber.d(distanceArray.toList().toString())
+                    Timber.d(timeArray.toList().toString())
                 }
                 getSpeed(BuildConfig.DEBUG, size, timeArray, distanceArray)
             }
+            Timber.d("speed $speed")
             reference?.get()?.onSpeedChanged(speed)
         }
     }

@@ -72,7 +72,7 @@ class MainActivity : BaseActivity(), LocationListener {
     }
 
     override fun onDestroy() {
-        locationManager.clear()
+        locationManager.release()
         super.onDestroy()
     }
 }
