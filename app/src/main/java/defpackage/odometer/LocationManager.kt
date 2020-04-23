@@ -39,19 +39,17 @@ class LocationManager(context: Context) : CoroutineScope,
 
     private val timeArray = LongArray(10)
 
-    private val distancesArray = FloatArray(10)
+    private val distanceArray = FloatArray(10)
 
     private val timeList = mutableListOf<Long>()
 
-    private val distancesList = mutableListOf<Float>()
+    private val distanceList = mutableListOf<Float>()
 
     private var lastLocation: Location? = null
 
-    private var startTime = 0L
-
     init {
         require(MEASURE_TIME / LOCATION_TIME in 2..timeArray.size) {
-            "Required at least 2 points and less than array size"
+            "At least 2 measurements are required in time and less than the size of the array"
         }
         System.loadLibrary("main")
         if (context.areGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -84,11 +82,12 @@ class LocationManager(context: Context) : CoroutineScope,
             }
             return
         }
+        timeList.add(SystemClock.elapsedRealtime())
+        distanceList.add(0f)
         val request = LocationRequest.create()
             .setInterval(LOCATION_TIME)
             .setFastestInterval(LOCATION_TIME)
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-        startTime = SystemClock.elapsedRealtime()
         fusedClient.requestLocationUpdates(request, locationCallback, null)
         if (context is Activity) {
             LocationServices.getSettingsClient(context)
@@ -133,18 +132,18 @@ class LocationManager(context: Context) : CoroutineScope,
                     )
                     val now = SystemClock.elapsedRealtime()
                     val iterator = timeList.iterator()
-                    for ((i, x) in iterator.withIndex()) {
-                        if (x < now - MEASURE_TIME) {
+                    for ((i, time) in iterator.withIndex()) {
+                        if (time < now - MEASURE_TIME) {
                             iterator.remove()
-                            distancesList.removeAt(i)
+                            distanceList.removeAt(i)
                         }
                     }
                     timeList.add(now)
-                    distancesList.add(output[0])
+                    distanceList.add(output[0])
                     timeList.copyToArray(timeArray, -1L)
-                    distancesList.copyToArray(distancesArray, 0f)
+                    distanceList.copyToArray(distanceArray, 0f)
                     val size = min(timeArray.size, timeList.size)
-                    getSpeed(size, timeArray, distancesArray)
+                    getSpeed(size, timeArray, distanceArray)
                 }
                 reference?.get()?.onSpeedChanged(speed)
             }
@@ -157,10 +156,11 @@ class LocationManager(context: Context) : CoroutineScope,
         job.cancelChildren()
         lastLocation = null
         timeList.clear()
-        distancesList.clear()
+        distanceList.clear()
     }
 
     fun clear() {
+        removeUpdates()
         reference?.clear()
     }
 
