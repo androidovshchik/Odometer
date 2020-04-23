@@ -53,7 +53,7 @@ class MainActivity : BaseActivity(), LocationListener {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             REQUEST_LOCATION -> {
-                locationManager.requestUpdates(applicationContext)
+                locationManager.requestUpdates(this)
             }
         }
     }
