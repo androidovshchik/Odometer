@@ -2,27 +2,27 @@
 
 package defpackage.odometer.screen.main
 
-import android.app.Fragment
 import android.app.FragmentManager
 import android.view.View
 import android.view.ViewGroup
 import androidx.collection.SimpleArrayMap
-import androidx.legacy.app.FragmentStatePagerAdapter
+import androidx.legacy.app.FragmentPagerAdapter
 
-class TabsAdapter(manager: FragmentManager) : FragmentStatePagerAdapter(manager) {
+class TabsAdapter(manager: FragmentManager) : FragmentPagerAdapter(manager) {
 
-    val fragments = SimpleArrayMap<Int, Fragment>()
+    val fragments = SimpleArrayMap<Int, LocationFragment>()
 
-    override fun getItem(position: Int): Fragment? {
-        if (!fragments.containsKey(position)) {
-            val fragment = when (position) {
+    override fun getItem(position: Int): LocationFragment {
+        var fragment = fragments.get(position)
+        if (fragment == null) {
+            fragment = when (position) {
                 0 -> FirstFragment.newInstance()
                 else -> SecondFragment.newInstance()
             }
             fragments.put(position, fragment)
             return fragment
         }
-        return fragments.get(position)
+        return fragment
     }
 
     override fun getCount(): Int = 2
