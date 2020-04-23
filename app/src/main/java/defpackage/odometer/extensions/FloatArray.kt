@@ -11,12 +11,14 @@ inline fun FloatArray.removeAll(predicate: (Float) -> Boolean) {
 }
 
 fun FloatArray.shiftLeft() {
-    (0 until size).forEach {
-        if (it < size - 1) {
-            set(it, get(it + 1))
-        } else {
-            set(it, -1f)
+    var i = -1
+    forEach {
+        if (it > 0) {
+            set(++i, it)
         }
+    }
+    (i + 1 until size).forEach {
+        set(it, -1f)
     }
 }
 

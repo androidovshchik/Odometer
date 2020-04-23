@@ -12,20 +12,13 @@ inline fun LongArray.removeAll(predicate: (Long) -> Boolean) {
 
 fun LongArray.shiftLeft() {
     var i = -1
-    forEachIndexed { i, item ->
-        if (get(it) < 0) {
-            set(it, value)
-        }
-        if (get(it) > 0) {
-            set(++i, get(it))
-        }
-        if (it < size - 1) {
-            set(it, get(it + 1))
-        } else {
-            set(it, -1L)
+    forEach {
+        if (it > 0) {
+            set(++i, it)
         }
     }
-    (0 until size).forEach {
+    (i + 1 until size).forEach {
+        set(it, -1L)
     }
 }
 
