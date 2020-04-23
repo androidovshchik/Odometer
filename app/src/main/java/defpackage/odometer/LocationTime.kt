@@ -3,26 +3,38 @@ package defpackage.odometer
 import android.location.Location
 import android.os.SystemClock
 
+@Suppress("MemberVisibilityCanBePrivate")
 class LocationTime {
 
-    var lat = 0.0
+    private var lat = 0.0
 
-    var lon = 0.0
+    private var lon = 0.0
 
-    var elapsedTime = -1L
+    private var lastTime = Long.MIN_VALUE
 
-    private val output = FloatArray(2)
+    private val output = FloatArray(1)
+
+    init {
+        clear()
+    }
 
     /**
      * @return distance in meters
      */
-    fun update(location: Location): Float {
+    fun getDistance(location: Location): Float {
         val now = SystemClock.elapsedRealtime()
-        Location.distanceBetween(lat, lon, location.latitude, location.longitude, output)
+        if (lastTime >= now - MEASURE_TIME) {
+            Location.distanceBetween(lat, lon, location.latitude, location.longitude, output)
+        } else {
+            output.fill(0f)
+        }
+        lat = location.latitude
+        lon = location.longitude
+        lastTime = now
         return output[0]
     }
 
     fun clear() {
-
+        output.fill(0f)
     }
 }
