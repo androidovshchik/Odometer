@@ -36,7 +36,7 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
         init {
             speedWatcher = speed.onTextChanged {
                 afterTextChanged {
-
+                    val position = bindingAdapterPosition
                 }
             }
             distanceWatcher = distance.onTextChanged {

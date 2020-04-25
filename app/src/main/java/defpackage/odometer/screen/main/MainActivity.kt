@@ -39,7 +39,9 @@ class MainActivity : BaseActivity(), LocationListener {
     }
 
     override fun onLocationAvailability(available: Boolean) {
-
+        adapter.fragments.forEach { _, fragment ->
+            fragment.onLocationAvailability(available)
+        }
     }
 
     override fun onSpeedChanged(speed: Int) {

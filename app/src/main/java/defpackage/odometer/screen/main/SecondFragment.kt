@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.kodein.di.generic.instance
 
+@Suppress("DEPRECATION")
 class SecondFragment : LocationFragment() {
 
     private val preferences by instance<Preferences>()
@@ -53,16 +54,28 @@ class SecondFragment : LocationFragment() {
         rv_list.adapter = adapter
         rv_list.setHasFixedSize(true)
         rv_list.isNestedScrollingEnabled = false
+        im_delete.setOnClickListener {
+            it.isEnabled = false
+            GlobalScope.launch(Dispatchers.Main) {
+                withContext(Dispatchers.IO) {
+                    db.limitDao().delete(item)
+                }
+                if (getView() != null) {
+                    loadLimits()
+                    it.isEnabled = true
+                }
+            }
+        }
         im_add.setOnClickListener {
             it.isEnabled = false
             GlobalScope.launch(Dispatchers.Main) {
-                val item = LimitEntity()
-                item.id = withContext(Dispatchers.IO) {
-                    db.limitDao().insert(item)
+                withContext(Dispatchers.IO) {
+                    db.limitDao().insert(LimitEntity())
                 }
-                adapter.items.add(item)
-                adapter.notifyDataSetChanged()
-                it.isEnabled = true
+                if (getView() != null) {
+                    loadLimits()
+                    it.isEnabled = true
+                }
             }
         }
     }
