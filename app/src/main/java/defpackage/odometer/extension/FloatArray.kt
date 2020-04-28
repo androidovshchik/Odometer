@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package defpackage.odometer.extensions
+package defpackage.odometer.extension
 
 fun FloatArray.shiftLeft() {
     var i = -1

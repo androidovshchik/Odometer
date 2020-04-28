@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package defpackage.odometer.extensions
+package defpackage.odometer.extension
 
 import android.app.Activity
 import android.content.Context
