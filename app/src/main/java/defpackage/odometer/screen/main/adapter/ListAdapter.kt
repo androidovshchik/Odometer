@@ -14,6 +14,7 @@ import defpackage.odometer.screen.base.BaseAdapter
 import defpackage.odometer.screen.base.BaseHolder
 import defpackage.odometer.screen.base.IAdapter
 import kotlinx.android.synthetic.main.item_list.view.*
+import timber.log.Timber
 
 class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntity>(listener) {
 
@@ -63,11 +64,17 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
             distance.setTextSelection(item.distance.toString())
         }
 
-        override fun onMenuItemClick(item: MenuItem): Boolean {
-            when (item.itemId) {
+        override fun onMenuItemClick(menuItem: MenuItem): Boolean {
+            when (menuItem.itemId) {
                 R.id.action_delete -> {
-                    val position = bindingAdapterPosition
-                    reference?.get()?.onItemRemoved(position, items[position])
+                    try {
+                        val position = bindingAdapterPosition
+                        reference?.get()?.onItemRemoved(position, items[position])
+                        items.removeAt(position)
+                        notifyItemRemoved(position)
+                    } catch (e: Throwable) {
+                        Timber.e(e)
+                    }
                 }
             }
             return true

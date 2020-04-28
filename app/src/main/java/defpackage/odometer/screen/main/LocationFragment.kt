@@ -9,6 +9,7 @@ import defpackage.odometer.screen.base.BaseFragment
 abstract class LocationFragment : BaseFragment(), LocationListener {
 
     override fun onLocationStates(states: LocationSettingsStates?) {
+        throw IllegalAccessException("Should not be called")
     }
 
     override fun onLocationAvailability(available: Boolean) {

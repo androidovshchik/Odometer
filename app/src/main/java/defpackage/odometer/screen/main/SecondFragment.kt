@@ -9,12 +9,7 @@ import defpackage.odometer.R
 import defpackage.odometer.extensions.onTextChanged
 import defpackage.odometer.extensions.setTextSelection
 import defpackage.odometer.local.Preferences
-import defpackage.odometer.local.entity.LimitEntity
 import kotlinx.android.synthetic.main.fragment_second.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.kodein.di.generic.instance
 
 @Suppress("DEPRECATION")
@@ -51,36 +46,6 @@ class SecondFragment : LocationFragment() {
                 preferences.conditionalWidth = it?.toString()
             }
         }
-        rv_list.adapter = adapter
-        rv_list.setHasFixedSize(true)
-        rv_list.isNestedScrollingEnabled = false
-        im_delete.setOnClickListener {
-            it.isEnabled = false
-            GlobalScope.launch(Dispatchers.Main) {
-                withContext(Dispatchers.IO) {
-                    db.limitDao().delete(item)
-                }
-                if (getView() != null) {
-                    loadLimits()
-                    it.isEnabled = true
-                }
-            }
-        }
-        im_add.setOnClickListener {
-            it.isEnabled = false
-            GlobalScope.launch(Dispatchers.Main) {
-                withContext(Dispatchers.IO) {
-                    db.limitDao().insert(LimitEntity())
-                }
-                if (getView() != null) {
-                    loadLimits()
-                    it.isEnabled = true
-                }
-            }
-        }
-    }
-
-    override fun onItemClicked(position: Int, item: LimitEntity) {
     }
 
     @Suppress("DEPRECATION")
