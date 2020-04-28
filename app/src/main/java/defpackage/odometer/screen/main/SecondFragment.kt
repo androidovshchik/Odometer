@@ -48,6 +48,10 @@ class SecondFragment : LocationFragment() {
         }
     }
 
+    override fun onTelemetryChanged(speed: Int, distance: Float) {
+        tv_position.text = distance.toString()
+    }
+
     @Suppress("DEPRECATION")
     override fun onDestroyView() {
         et_train_number.removeTextChangedListener(numberWatcher)

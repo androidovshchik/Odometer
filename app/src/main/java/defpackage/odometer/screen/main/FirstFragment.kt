@@ -26,7 +26,8 @@ class FirstFragment : LocationFragment() {
         })
     }
 
-    override fun onSpeedChanged(speed: Int) {
+    override fun onTelemetryChanged(speed: Int, distance: Float) {
+        tv_position.text = distance.toString()
         with(speed.toString().padStart(3, '0')) {
             tv_1.text = get(length - 3).toString()
             tv_2.text = get(length - 2).toString()

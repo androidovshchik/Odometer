@@ -1,7 +1,7 @@
 package defpackage.odometer
 
 import android.location.Location
-import defpackage.odometer.extensions.pseudoElapsedTime
+import defpackage.odometer.extension.pseudoElapsedTime
 
 class LocationTime {
 

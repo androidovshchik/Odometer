@@ -9,7 +9,7 @@ abstract class LimitDao {
     @Query(
         """
         SELECT * FROM limits
-        ORDER BY l_id ASC
+        ORDER BY l_distance ASC
     """
     )
     abstract fun getAll(): List<LimitEntity>

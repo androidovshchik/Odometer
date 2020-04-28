@@ -92,9 +92,9 @@ class MainActivity : BaseActivity(), LocationListener, ListListener {
         }
     }
 
-    override fun onSpeedChanged(speed: Int) {
+    override fun onTelemetryChanged(speed: Int, distance: Float) {
         tabsAdapter.fragments.forEach { _, fragment ->
-            fragment.onSpeedChanged(speed)
+            fragment.onTelemetryChanged(speed, distance)
         }
     }
 

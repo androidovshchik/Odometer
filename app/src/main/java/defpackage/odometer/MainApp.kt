@@ -18,6 +18,7 @@ import org.kodein.di.generic.provider
 import org.kodein.di.generic.singleton
 import timber.log.Timber
 
+@Suppress("unused")
 class MainApp : Application(), KodeinAware {
 
     override val kodein by Kodein.lazy {
