@@ -17,7 +17,7 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -30,9 +30,29 @@
                 tools:listitem="@layout/item_list" />
 
             <ImageButton
+                android:id="@+id/im_sort"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rv_list"
+                android:layout_gravity="end"
+                android:layout_marginTop="9dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="9dp"
+                android:layout_toStartOf="@+id/im_add"
+                android:background="@drawable/defbackground"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:paddingStart="16dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp"
+                android:src="@drawable/ic_filter_list_black_24dp" />
+
+            <ImageButton
                 android:id="@+id/im_add"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/rv_list"
+                android:layout_alignParentEnd="true"
                 android:layout_gravity="end"
                 android:layout_marginTop="9dp"
                 android:layout_marginEnd="12dp"
@@ -45,7 +65,7 @@
                 android:paddingBottom="8dp"
                 android:src="@drawable/ic_add_black_24dp" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
     </androidx.core.widget.NestedScrollView>
 

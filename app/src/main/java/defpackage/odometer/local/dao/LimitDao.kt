@@ -18,7 +18,7 @@ abstract class LimitDao {
     abstract fun insert(item: LimitEntity): Long
 
     @Update
-    abstract fun update(item: List<LimitEntity>)
+    abstract fun update(items: List<LimitEntity>)
 
     @Delete
     abstract fun delete(item: LimitEntity): Int

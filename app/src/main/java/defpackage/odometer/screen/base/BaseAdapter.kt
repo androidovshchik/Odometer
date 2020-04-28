@@ -13,7 +13,7 @@ import java.lang.ref.WeakReference
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class BaseAdapter<T : IAdapter<E>, E> : RecyclerView.Adapter<BaseHolder<E>> {
 
-    val items = mutableListOf<E>()
+    abstract val items: List<E>
 
     protected var reference: WeakReference<T>? = null
 

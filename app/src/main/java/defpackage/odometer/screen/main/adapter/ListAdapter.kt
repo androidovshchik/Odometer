@@ -8,23 +8,22 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import com.redmadrobot.inputmask.MaskedTextChangedListener
 import defpackage.odometer.R
-import defpackage.odometer.extensions.onTextChanged
-import defpackage.odometer.extensions.setTextSelection
+import defpackage.odometer.extension.onTextChanged
+import defpackage.odometer.extension.setTextSelection
 import defpackage.odometer.local.entity.LimitEntity
 import defpackage.odometer.screen.base.BaseAdapter
 import defpackage.odometer.screen.base.BaseHolder
 import defpackage.odometer.screen.base.IAdapter
 import kotlinx.android.synthetic.main.item_list.view.*
 import timber.log.Timber
+import java.util.concurrent.CopyOnWriteArrayList
 
 class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntity>(listener) {
 
+    override val items = CopyOnWriteArrayList<LimitEntity>()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(parent.inflate(R.layout.item_list))
-    }
-
-    override fun onViewRecycled(holder: BaseHolder<LimitEntity>) {
-        (holder as ViewHolder).release()
     }
 
     inner class ViewHolder(itemView: View) : BaseHolder<LimitEntity>(itemView),
@@ -88,6 +87,7 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
             return true
         }
 
+        @Suppress("unused")
         fun release() {
             speed.removeTextChangedListener(speedWatcher)
             distance.removeTextChangedListener(distanceWatcher)

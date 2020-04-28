@@ -10,6 +10,7 @@ import defpackage.odometer.LocationListener
 import defpackage.odometer.LocationManager
 import defpackage.odometer.R
 import defpackage.odometer.REQUEST_LOCATION
+import defpackage.odometer.extension.sortListBy
 import defpackage.odometer.local.Database
 import defpackage.odometer.local.entity.LimitEntity
 import defpackage.odometer.screen.base.BaseActivity
@@ -48,6 +49,10 @@ class MainActivity : BaseActivity(), LocationListener, ListListener {
             setHasFixedSize(true)
             isNestedScrollingEnabled = false
             layoutManager?.isAutoMeasureEnabled = true
+        }
+        im_sort.setOnClickListener {
+            listAdapter.items.sortListBy { it.distance }
+            listAdapter.notifyDataSetChanged()
         }
         im_add.setOnClickListener {
             it.isEnabled = false
@@ -117,7 +122,7 @@ class MainActivity : BaseActivity(), LocationListener, ListListener {
         locationManager.removeUpdates()
         releasePlayer()
         GlobalScope.launch(Dispatchers.IO) {
-            db.limitDao().update()
+            db.limitDao().update(listAdapter.items)
         }
         super.onStop()
     }

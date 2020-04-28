@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import defpackage.odometer.R
-import defpackage.odometer.extensions.onTextChanged
-import defpackage.odometer.extensions.setTextSelection
+import defpackage.odometer.extension.onTextChanged
+import defpackage.odometer.extension.setTextSelection
 import defpackage.odometer.local.Preferences
 import kotlinx.android.synthetic.main.fragment_second.*
 import org.kodein.di.generic.instance
