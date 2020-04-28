@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import com.redmadrobot.inputmask.MaskedTextChangedListener
 import defpackage.odometer.R
 import defpackage.odometer.extensions.onTextChanged
 import defpackage.odometer.extensions.setTextSelection
@@ -40,8 +41,11 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
         init {
             speedWatcher = speed.onTextChanged {
                 afterTextChanged {
-                    val position = bindingAdapterPosition
+
                 }
+            }
+            MaskedTextChangedListener.installOn(distance, "[000] [000]{.}[0]").apply {
+                rightToLeft = true
             }
             distanceWatcher = distance.onTextChanged {
                 afterTextChanged {
@@ -61,7 +65,7 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
         @SuppressLint("SetTextI18n")
         override fun onBindItem(position: Int, item: LimitEntity) {
             speed.setTextSelection(item.speed.toString())
-            distance.setTextSelection(item.distance.toString())
+            distance.setText(item.distance.toString())
         }
 
         override fun onMenuItemClick(menuItem: MenuItem): Boolean {
@@ -71,7 +75,7 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
                         val position = bindingAdapterPosition
                         reference?.get()?.onItemRemoved(position, items[position])
                         items.removeAt(position)
-                        notifyItemRemoved(position)
+                        notifyDataSetChanged()
                     } catch (e: Throwable) {
                         Timber.e(e)
                     }
