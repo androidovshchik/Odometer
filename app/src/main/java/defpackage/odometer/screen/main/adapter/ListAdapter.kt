@@ -47,11 +47,12 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
 
                 }
             }
+            val menu = itemView.im_menu
             val popup = PopupMenu(appContext, menu).also {
                 it.menuInflater.inflate(R.menu.popup_menu, it.menu)
                 it.setOnMenuItemClickListener(this)
             }
-            itemView.im_menu.setOnClickListener {
+            menu.setOnClickListener {
                 popup.show()
             }
         }
@@ -65,7 +66,8 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
         override fun onMenuItemClick(item: MenuItem): Boolean {
             when (item.itemId) {
                 R.id.action_delete -> {
-
+                    val position = bindingAdapterPosition
+                    reference?.get()?.onItemRemoved(position, items[position])
                 }
             }
             return true
@@ -78,4 +80,7 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
     }
 }
 
-interface ListListener : IAdapter<LimitEntity>
+interface ListListener : IAdapter<LimitEntity> {
+
+    fun onItemRemoved(position: Int, item: LimitEntity)
+}

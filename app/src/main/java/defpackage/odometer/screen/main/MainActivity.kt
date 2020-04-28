@@ -10,27 +10,57 @@ import defpackage.odometer.LocationListener
 import defpackage.odometer.LocationManager
 import defpackage.odometer.R
 import defpackage.odometer.REQUEST_LOCATION
+import defpackage.odometer.local.Database
+import defpackage.odometer.local.entity.LimitEntity
 import defpackage.odometer.screen.base.BaseActivity
+import defpackage.odometer.screen.main.adapter.ListAdapter
+import defpackage.odometer.screen.main.adapter.ListListener
+import defpackage.odometer.screen.main.adapter.TabsAdapter
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
 @Suppress("DEPRECATION")
-class MainActivity : BaseActivity(), LocationListener {
+class MainActivity : BaseActivity(), LocationListener, ListListener {
 
     private val locationManager by instance<LocationManager>()
 
-    private lateinit var adapter: TabsAdapter
+    private val db by instance<Database>()
+
+    private lateinit var tabsAdapter: TabsAdapter
+
+    private val listAdapter = ListAdapter(this)
 
     private var signalPlayer: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        adapter = TabsAdapter(fragmentManager)
+        tabsAdapter = TabsAdapter(fragmentManager)
         setContentView(R.layout.activity_main)
-        vp_main.adapter = adapter
+        vp_main.adapter = tabsAdapter
+        rv_list.apply {
+            adapter = listAdapter
+            setHasFixedSize(true)
+            isNestedScrollingEnabled = false
+        }
         locationManager.setLocationListener(this)
+        launch {
+            val items = withContext(Dispatchers.IO) {
+                db.limitDao().getAll()
+            }
+            listAdapter.items.clear()
+            listAdapter.items.addAll(items)
+            listAdapter.notifyDataSetChanged()
+            while (true) {
+                playSignal()
+                delay(3000)
+            }
+        }
     }
 
     override fun onStart() {
@@ -43,15 +73,22 @@ class MainActivity : BaseActivity(), LocationListener {
     }
 
     override fun onLocationAvailability(available: Boolean) {
-        adapter.fragments.forEach { _, fragment ->
+        tabsAdapter.fragments.forEach { _, fragment ->
             fragment.onLocationAvailability(available)
         }
     }
 
     override fun onSpeedChanged(speed: Int) {
-        adapter.fragments.forEach { _, fragment ->
+        tabsAdapter.fragments.forEach { _, fragment ->
             fragment.onSpeedChanged(speed)
         }
+    }
+
+    override fun onItemClicked(position: Int, item: LimitEntity) {
+    }
+
+    override fun onItemRemoved(position: Int, item: LimitEntity) {
+
     }
 
     fun playSignal() {
