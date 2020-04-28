@@ -22,7 +22,7 @@
         <activity
             android:name=".screen.main.MainActivity"
             android:screenOrientation="sensorPortrait"
-            android:windowSoftInputMode="adjustPan|stateHidden"
+            android:windowSoftInputMode="adjustResize|stateHidden"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -41,7 +41,11 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
         init {
             speedWatcher = speed.onTextChanged {
                 afterTextChanged {
-
+                    try {
+                        items[bindingAdapterPosition].speed = it.toString().toInt()
+                    } catch (e: Throwable) {
+                        Timber.e(e)
+                    }
                 }
             }
             MaskedTextChangedListener.installOn(distance, "[000] [000]{.}[0]").apply {
@@ -49,7 +53,11 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
             }
             distanceWatcher = distance.onTextChanged {
                 afterTextChanged {
-
+                    try {
+                        items[bindingAdapterPosition].distance = it.toString().toFloat()
+                    } catch (e: Throwable) {
+                        Timber.e(e)
+                    }
                 }
             }
             val menu = itemView.im_menu
@@ -70,15 +78,13 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
 
         override fun onMenuItemClick(menuItem: MenuItem): Boolean {
             when (menuItem.itemId) {
-                R.id.action_delete -> {
-                    try {
-                        val position = bindingAdapterPosition
-                        reference?.get()?.onItemRemoved(position, items[position])
-                        items.removeAt(position)
-                        notifyDataSetChanged()
-                    } catch (e: Throwable) {
-                        Timber.e(e)
-                    }
+                R.id.action_delete -> try {
+                    val position = bindingAdapterPosition
+                    reference?.get()?.onItemRemoved(position, items[position])
+                    items.removeAt(position)
+                    notifyDataSetChanged()
+                } catch (e: Throwable) {
+                    Timber.e(e)
                 }
             }
             return true
