@@ -43,8 +43,7 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
                 afterTextChanged {
                     try {
                         items[bindingAdapterPosition].speed = it.toString().toInt()
-                    } catch (e: Throwable) {
-                        Timber.e(e)
+                    } catch (ignored: Throwable) {
                     }
                 }
             }
@@ -55,8 +54,7 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
                 afterTextChanged {
                     try {
                         items[bindingAdapterPosition].distance = it.toString().toFloat()
-                    } catch (e: Throwable) {
-                        Timber.e(e)
+                    } catch (ignored: Throwable) {
                     }
                 }
             }

@@ -18,7 +18,7 @@ import defpackage.odometer.screen.main.adapter.ListListener
 import defpackage.odometer.screen.main.adapter.TabsAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.kodein.di.generic.instance
@@ -47,6 +47,19 @@ class MainActivity : BaseActivity(), LocationListener, ListListener {
             adapter = listAdapter
             setHasFixedSize(true)
             isNestedScrollingEnabled = false
+            layoutManager?.isAutoMeasureEnabled = true
+        }
+        im_add.setOnClickListener {
+            it.isEnabled = false
+            GlobalScope.launch(Dispatchers.Main) {
+                val item = LimitEntity()
+                item.id = withContext(Dispatchers.IO) {
+                    db.limitDao().insert(LimitEntity())
+                }
+                listAdapter.items.add(item)
+                listAdapter.notifyDataSetChanged()
+                it.isEnabled = true
+            }
         }
         locationManager.setLocationListener(this)
         launch {
@@ -56,10 +69,6 @@ class MainActivity : BaseActivity(), LocationListener, ListListener {
             listAdapter.items.clear()
             listAdapter.items.addAll(items)
             listAdapter.notifyDataSetChanged()
-            while (true) {
-                playSignal()
-                delay(3000)
-            }
         }
     }
 
@@ -88,10 +97,12 @@ class MainActivity : BaseActivity(), LocationListener, ListListener {
     }
 
     override fun onItemRemoved(position: Int, item: LimitEntity) {
-
+        GlobalScope.launch(Dispatchers.IO) {
+            db.limitDao().delete(item)
+        }
     }
 
-    fun playSignal() {
+    private fun playSignal() {
         releasePlayer()
         try {
             signalPlayer = MediaPlayer.create(applicationContext, R.raw.hey).also {
@@ -105,6 +116,9 @@ class MainActivity : BaseActivity(), LocationListener, ListListener {
     override fun onStop() {
         locationManager.removeUpdates()
         releasePlayer()
+        GlobalScope.launch(Dispatchers.IO) {
+            db.limitDao().update()
+        }
         super.onStop()
     }
 
