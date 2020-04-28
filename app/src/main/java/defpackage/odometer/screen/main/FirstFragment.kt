@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import defpackage.odometer.R
-import defpackage.odometer.local.entity.LimitEntity
 import kotlinx.android.synthetic.main.fragment_first.*
 
 class FirstFragment : LocationFragment() {
@@ -16,8 +15,6 @@ class FirstFragment : LocationFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        rv_list.adapter = adapter
-        rv_list.setHasFixedSize(true)
     }
 
     @Suppress("DEPRECATION")
@@ -35,9 +32,6 @@ class FirstFragment : LocationFragment() {
             tv_2.text = get(length - 2).toString()
             tv_3.text = get(length - 1).toString()
         }
-    }
-
-    override fun onItemClicked(position: Int, item: LimitEntity) {
     }
 
     companion object {
