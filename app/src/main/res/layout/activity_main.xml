@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <androidx.viewpager.widget.ViewPager
+    <defpackage.odometer.screen.main.DynamicViewPager
         android:id="@+id/vp_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
