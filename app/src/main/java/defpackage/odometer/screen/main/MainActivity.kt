@@ -1,6 +1,7 @@
 package defpackage.odometer.screen.main
 
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.core.util.forEach
@@ -12,6 +13,7 @@ import defpackage.odometer.REQUEST_LOCATION
 import defpackage.odometer.screen.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import org.kodein.di.generic.instance
+import timber.log.Timber
 
 @Suppress("DEPRECATION")
 class MainActivity : BaseActivity(), LocationListener {
@@ -19,6 +21,8 @@ class MainActivity : BaseActivity(), LocationListener {
     private val locationManager by instance<LocationManager>()
 
     private lateinit var adapter: TabsAdapter
+
+    private var signalPlayer: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,9 +54,33 @@ class MainActivity : BaseActivity(), LocationListener {
         }
     }
 
+    fun playSignal() {
+        releasePlayer()
+        try {
+            signalPlayer = MediaPlayer.create(applicationContext, R.raw.hey).also {
+                it.start()
+            }
+        } catch (e: Throwable) {
+            Timber.e(e)
+        }
+    }
+
     override fun onStop() {
         locationManager.removeUpdates()
+        releasePlayer()
         super.onStop()
+    }
+
+    private fun releasePlayer() {
+        try {
+            signalPlayer?.apply {
+                stop()
+                reset()
+                release()
+            }
+        } catch (e: Throwable) {
+            Timber.e(e)
+        }
     }
 
     override fun onRequestPermissionsResult(
