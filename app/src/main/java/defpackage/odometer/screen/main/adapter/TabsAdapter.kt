@@ -1,12 +1,15 @@
 @file:Suppress("DEPRECATION")
 
-package defpackage.odometer.screen.main
+package defpackage.odometer.screen.main.adapter
 
 import android.app.FragmentManager
 import android.util.SparseArray
 import android.view.View
 import android.view.ViewGroup
 import androidx.legacy.app.FragmentPagerAdapter
+import defpackage.odometer.screen.main.FirstFragment
+import defpackage.odometer.screen.main.LocationFragment
+import defpackage.odometer.screen.main.SecondFragment
 
 class TabsAdapter(manager: FragmentManager) : FragmentPagerAdapter(manager) {
 

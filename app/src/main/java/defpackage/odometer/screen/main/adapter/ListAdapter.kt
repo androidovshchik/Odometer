@@ -1,4 +1,4 @@
-package defpackage.odometer.screen.main
+package defpackage.odometer.screen.main.adapter
 
 import android.annotation.SuppressLint
 import android.text.TextWatcher
