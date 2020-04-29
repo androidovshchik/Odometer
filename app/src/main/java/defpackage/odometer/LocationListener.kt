@@ -10,6 +10,7 @@ interface LocationListener {
 
     /**
      * @param speed in km/h
+     * @param position in km
      */
-    fun onTelemetryChanged(speed: Int, distance: Float)
+    fun onTelemetryChanged(speed: Int, position: Float)
 }

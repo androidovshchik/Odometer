@@ -1,7 +1,6 @@
 package defpackage.odometer.screen.main.adapter
 
 import android.annotation.SuppressLint
-import android.text.TextWatcher
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -33,12 +32,8 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
 
         private val position = itemView.et_position
 
-        private val speedWatcher: TextWatcher
-
-        private val positionWatcher: TextWatcher
-
         init {
-            speedWatcher = speed.onTextChanged {
+            speed.onTextChanged {
                 afterTextChanged {
                     try {
                         items[bindingAdapterPosition].speed = it.toString().toInt()
@@ -49,7 +44,7 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
             MaskedTextChangedListener.installOn(position, "[000] [000]{.}[0]").apply {
                 rightToLeft = true
             }
-            positionWatcher = position.onTextChanged {
+            position.onTextChanged {
                 afterTextChanged {
                     try {
                         items[bindingAdapterPosition].position = it.toString().toFloat()
@@ -85,12 +80,6 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
                 }
             }
             return true
-        }
-
-        @Suppress("unused")
-        fun release() {
-            speed.removeTextChangedListener(speedWatcher)
-            position.removeTextChangedListener(positionWatcher)
         }
     }
 }
