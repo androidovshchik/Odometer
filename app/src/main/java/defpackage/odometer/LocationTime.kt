@@ -11,25 +11,24 @@ class LocationTime {
 
     private var lastTime = -1L
 
-    private val output = FloatArray(1)
-
     init {
-        output.fill(0f)
+        System.loadLibrary("main")
     }
 
     /**
      * @return distance in meters
      */
     fun getDistance(location: Location): Float {
+        var distance = 0f
         val pseudoNow = pseudoElapsedTime()
         if (lastTime >= pseudoNow - MEASURE_TIME) {
-            Location.distanceBetween(lat, lon, location.latitude, location.longitude, output)
-        } else {
-            output.fill(0f)
+            distance = getDistance(lat, lon, location.latitude, location.longitude)
         }
         lat = location.latitude
         lon = location.longitude
         lastTime = pseudoNow
-        return output[0]
+        return distance
     }
+
+    private external fun getDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Float
 }
