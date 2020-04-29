@@ -31,11 +31,11 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
 
         private val speed = itemView.et_speed
 
-        private val distance = itemView.et_distance
+        private val position = itemView.et_position
 
         private val speedWatcher: TextWatcher
 
-        private val distanceWatcher: TextWatcher
+        private val positionWatcher: TextWatcher
 
         init {
             speedWatcher = speed.onTextChanged {
@@ -46,13 +46,13 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
                     }
                 }
             }
-            MaskedTextChangedListener.installOn(distance, "[000] [000]{.}[0]").apply {
+            MaskedTextChangedListener.installOn(position, "[000] [000]{.}[0]").apply {
                 rightToLeft = true
             }
-            distanceWatcher = distance.onTextChanged {
+            positionWatcher = position.onTextChanged {
                 afterTextChanged {
                     try {
-                        items[bindingAdapterPosition].distance = it.toString().toFloat()
+                        items[bindingAdapterPosition].position = it.toString().toFloat()
                     } catch (ignored: Throwable) {
                     }
                 }
@@ -70,7 +70,7 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
         @SuppressLint("SetTextI18n")
         override fun onBindItem(position: Int, item: LimitEntity) {
             speed.setTextSelection(item.speed.toString())
-            distance.setText(item.distance.toString())
+            this.position.setText(item.position.toString())
         }
 
         override fun onMenuItemClick(menuItem: MenuItem): Boolean {
@@ -90,7 +90,7 @@ class ListAdapter(listener: ListListener) : BaseAdapter<ListListener, LimitEntit
         @Suppress("unused")
         fun release() {
             speed.removeTextChangedListener(speedWatcher)
-            distance.removeTextChangedListener(distanceWatcher)
+            position.removeTextChangedListener(positionWatcher)
         }
     }
 }

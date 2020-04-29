@@ -16,6 +16,6 @@ class LimitEntity {
     @ColumnInfo(name = "l_speed")
     var speed = 0
 
-    @ColumnInfo(name = "l_distance")
-    var distance = 0f
+    @ColumnInfo(name = "l_position")
+    var position = 0f
 }

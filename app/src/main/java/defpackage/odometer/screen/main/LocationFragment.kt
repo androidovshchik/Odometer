@@ -15,6 +15,6 @@ abstract class LocationFragment : BaseFragment(), LocationListener {
     override fun onLocationAvailability(available: Boolean) {
     }
 
-    override fun onTelemetryChanged(speed: Int, distance: Float) {
+    override fun onTelemetryChanged(speed: Int, position: Float) {
     }
 }

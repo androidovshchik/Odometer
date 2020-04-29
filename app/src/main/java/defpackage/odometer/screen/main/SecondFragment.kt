@@ -48,8 +48,8 @@ class SecondFragment : LocationFragment() {
         }
     }
 
-    override fun onTelemetryChanged(speed: Int, distance: Float) {
-        tv_position.text = distance.toString()
+    override fun onTelemetryChanged(speed: Int, position: Float) {
+        tv_position.text = position.toString()
     }
 
     @Suppress("DEPRECATION")
